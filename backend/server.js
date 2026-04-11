@@ -18,12 +18,7 @@ const io = socketIo(server, {
 
 // Global Middleware
 app.use(cors({
-  origin: [
-    "http://localhost:3001",
-    "http://127.0.0.1:3001",
-    "http://localhost:5173",
-    "http://127.0.0.1:5173"
-  ],
+  origin: 'https://codecrusher-frontend.onrender.com',
   credentials: true
 }));
 app.use(express.json());
