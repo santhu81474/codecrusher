@@ -435,7 +435,7 @@ AI:`
             {challenge.testCases && challenge.testCases.length > 0 && (
                <div style={{ borderTop: '1px dashed rgba(255,255,255,0.1)' }}>
                  <div onClick={() => setShowTests(!showTests)} className="mono" style={{ cursor: 'pointer', padding: '12px 24px', backgroundColor: 'rgba(0,0,0,0.3)', color: 'var(--link-color)', fontSize: '12px', display: 'flex', justifyContent: 'space-between' }}>
-                    <span>[ TEST_MATRIX_EVALUATOR ]</span>
+                    <span>[ TEST MATRIX EVALUATOR ]</span>
                     <span>{showTests ? '▼' : '▶'}</span>
                  </div>
                  {showTests && (
@@ -538,7 +538,7 @@ AI:`
 
             {/* 2. Live Complexity Indicators */}
             <div style={{ padding: '8px 24px', backgroundColor: 'rgba(0,0,0,0.4)', display: 'flex', gap: '16px', alignItems: 'center' }}>
-               <span className="mono" style={{ fontSize: '11px', color: 'var(--text-muted)' }}>LIVE_EVAL:</span>
+               <span className="mono" style={{ fontSize: '11px', color: 'var(--text-muted)' }}>LIVE EVAL:</span>
                <div className="mono" style={{ 
                   padding: '4px 12px', borderRadius: '20px', fontSize: '11px', 
                   border: '1px solid #F59E0B', color: '#F59E0B', backgroundColor: 'rgba(245, 158, 11, 0.1)',
