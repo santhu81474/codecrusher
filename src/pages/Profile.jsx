@@ -144,13 +144,19 @@ const Profile = () => {
             </a>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            <input type="url" placeholder="GitHub URL" value={githubEdit} onChange={(e) => setGithubEdit(e.target.value)} className="form-input mono" style={{ fontSize: 11, padding: '8px 12px' }} />
-            <input type="url" placeholder="LinkedIn URL" value={linkedinEdit} onChange={(e) => setLinkedinEdit(e.target.value)} className="form-input mono" style={{ fontSize: 11, padding: '8px 12px' }} />
-            <button onClick={handleSaveSocial} className="btn btn-outline mono" style={{ fontSize: 11, padding: '8px', width: '100%' }}>
-              {savingSocial ? 'SYNCING...' : 'Update Social Nodes'}
-            </button>
-          </div>
+          {(!user?.githubUrl || !user?.linkedinUrl) && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {!user?.githubUrl && (
+                  <input type="url" placeholder="GitHub URL" value={githubEdit} onChange={(e) => setGithubEdit(e.target.value)} className="form-input mono" style={{ fontSize: 11, padding: '8px 12px' }} />
+              )}
+              {!user?.linkedinUrl && (
+                  <input type="url" placeholder="LinkedIn URL" value={linkedinEdit} onChange={(e) => setLinkedinEdit(e.target.value)} className="form-input mono" style={{ fontSize: 11, padding: '8px 12px' }} />
+              )}
+              <button onClick={handleSaveSocial} className="btn btn-outline mono" style={{ fontSize: 11, padding: '8px', width: '100%' }}>
+                {savingSocial ? 'SYNCING...' : 'Update Social Nodes'}
+              </button>
+            </div>
+          )}
         </section>
 
         {/* Tactical Stats */}

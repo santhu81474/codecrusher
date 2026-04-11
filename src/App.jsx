@@ -23,6 +23,7 @@ import Forge from './pages/Forge';
 import GeminiChat from './pages/GeminiChat';
 import Bounties from './pages/Bounties';
 import Network from './pages/Network';
+import Matchmaker from './pages/Matchmaker';
 
 function App() {
   return (
@@ -52,6 +53,7 @@ function App() {
               <Route path="/gemini-chat" element={<ProtectedRoute><GeminiChat /></ProtectedRoute>} />
               <Route path="/bounties" element={<ProtectedRoute><Bounties /></ProtectedRoute>} />
               <Route path="/network" element={<ProtectedRoute><Network /></ProtectedRoute>} />
+              <Route path="/matchmaker" element={<ProtectedRoute><Matchmaker /></ProtectedRoute>} />
               
               {/* Fallback */}
               <Route path="*" element={<Navigate to="/dashboard" replace />} />

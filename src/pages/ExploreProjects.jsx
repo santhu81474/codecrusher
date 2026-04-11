@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { fetchProjects } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import RagWidget from '../components/RagWidget';
 
 // Simple local favorites per user (keyed by user id)
 const loadFavorites = (userId) => {
@@ -259,6 +260,7 @@ const ExploreProjects = () => {
           </div>
         )}
       </div>
+      <RagWidget />
     </div>
   );
 };

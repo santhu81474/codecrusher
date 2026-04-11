@@ -47,11 +47,25 @@ export const createProject = (projectData) => api.post('/projects', projectData)
 export const applyToProject = (projectId, userSkills) => api.post(`/projects/${projectId}/apply`, { userSkills });
 export const fetchUserApplications = () => api.get('/projects/my-applications');
 
+// Challenges & Arena
+export const fetchDailyChallenge = () => api.get('/challenges/daily');
+export const fetchAdaptiveChallenge = () => api.get('/challenges/adaptive');
+export const testSubmitSolution = (challengeId, code, language) => api.post('/challenges/submit', { challengeId, code, language });
+
 // Tests & Reviews
 export const submitTest = (testId, userAnswers) => api.post('/tests/submit', { testId, userAnswers });
 export const submitReview = (reviewData) => api.post('/reviews/add', reviewData);
 
 // Leaderboard
 export const fetchLeaderboard = () => api.get('/leaderboard');
+
+// AI Matchmaker
+export const runAiMatchmaker = (requirements) => api.post('/ai/matchmaker', { requirements });
+
+// Gemini Ext
+export const analyzeLiveComplexity = (code) => api.post('/gemini/analyze-complexity', { code });
+
+// RAG (Codebase-grounded Q&A)
+export const queryCodebaseRAG = (question) => api.post('/rag/query', { question });
 
 export default api;

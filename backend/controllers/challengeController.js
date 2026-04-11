@@ -1,7 +1,7 @@
 const Challenge = require('../models/Challenge');
 const Submission = require('../models/Submission');
 const User = require('../models/User');
-const { generateChallenge, validateSubmission } = require('../utils/gemini');
+const { generateChallenge, validateSubmission, generateAdaptiveChallenge } = require('../utils/gemini');
 
 const getDailyChallenge = async (req, res, next) => {
   try {
@@ -83,4 +83,33 @@ const submitSolution = async (req, res, next) => {
   }
 };
 
-module.exports = { getDailyChallenge, submitSolution };
+const getAdaptiveChallenge = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user.id).select('skills rating challengesSolved');
+    const recentSubmissions = await Submission.find({ userId: req.user.id })
+                                              .sort({ createdAt: -1 })
+                                              .limit(5)
+                                              .select('status language feedback pointsEarned createdAt');
+    
+    const userProfileStr = JSON.stringify(user, null, 2);
+    const historyStr = JSON.stringify(recentSubmissions.length > 0 ? recentSubmissions : "No history. User is completely new.", null, 2);
+
+    const aiChallenge = await generateAdaptiveChallenge(userProfileStr, historyStr);
+    
+    if (!aiChallenge) {
+      return res.status(500).json({ message: "DAAO AI Core overloaded. Try again." });
+    }
+
+    const challenge = await Challenge.create({
+      ...aiChallenge,
+      targetUserId: req.user.id,
+      activeDate: new Date()
+    });
+
+    res.json(challenge);
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { getDailyChallenge, submitSolution, getAdaptiveChallenge };

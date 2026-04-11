@@ -43,6 +43,8 @@ app.use('/api/leaderboard', require('./routes/leaderboardRoutes'));
 app.use('/api/challenges', require('./routes/challengeRoutes'));
 app.use('/api/snippets', require('./routes/snippetRoutes'));
 app.use('/api/gemini', require('./routes/geminiRoutes'));
+app.use('/api/ai', require('./routes/aiRoutes'));
+app.use('/api/rag', require('./routes/ragRoutes'));
 
 // ...existing code...
 

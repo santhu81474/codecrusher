@@ -10,6 +10,7 @@ const challengeSchema = new mongoose.Schema({
     output: { type: String, required: true }
   }],
   category: { type: String, enum: ['DSA', 'Frontend', 'Backend'], default: 'DSA' },
+  targetUserId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   activeDate: { type: Date, default: Date.now }
 }, { timestamps: true });
 

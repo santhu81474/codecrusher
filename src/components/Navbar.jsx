@@ -77,6 +77,7 @@ const Navbar = () => {
                   <Link to="/projects/create">Create Project</Link>
                   <Link to="/applications">Applications</Link>
                   <Link to="/bounties">Bounty Board</Link>
+                  <Link to="/matchmaker" style={{ color: 'var(--neon-green)' }}>AI Assembly ❖</Link>
                 </div>
               </div>
             </div>
