@@ -326,7 +326,7 @@ AI:`
   }
 
   return (
-    <div className="arena-container" style={{ maxWidth: '1800px', width: '100%', margin: '0 auto', padding: '24px 32px', minHeight: '100vh', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+    <div className="arena-container" style={{ maxWidth: '100%', width: '100%', margin: '0 auto', padding: '10px 20px', minHeight: '100vh', display: 'flex', flexDirection: 'column', position: 'relative' }}>
       
       {/* 4. Full Screen Level Up Animation Overlay */}
       {showLevelUp && (
