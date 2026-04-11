@@ -23,11 +23,7 @@ if (process.env.FRONTEND_URL) {
 const io = socketIo(server, {
   cors: {
     origin: function (origin, callback) {
-      if (!origin || allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes('*')) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
+      callback(null, true);
     },
     methods: ['GET', 'POST'],
     credentials: true
@@ -37,11 +33,7 @@ const io = socketIo(server, {
 // Global Middleware
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes('*')) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
+    callback(null, true);
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
