@@ -20,7 +20,8 @@ const GeminiChat = () => {
       const res = await api.post('/gemini/chat', { prompt: input });
       setMessages((prev) => [...prev, { sender: 'AI Assistant', text: res.data.response }]);
     } catch (err) {
-      setMessages((prev) => [...prev, { sender: 'AI Assistant', text: 'Response failed. Please check your connectivity.' }]);
+      const errorMsg = err.response?.data?.details || err.response?.data?.error || 'Response failed. Please check your connectivity.';
+      setMessages((prev) => [...prev, { sender: 'AI Assistant', text: errorMsg }]);
     } finally {
       setLoading(false);
       setInput('');

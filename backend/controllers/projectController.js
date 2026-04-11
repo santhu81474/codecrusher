@@ -78,9 +78,9 @@ const applyToProject = async (req, res, next) => {
           await project.save();
         }
       }
-      res.json({ message: 'Successfully applied', matchScore, status: application.status });
+      return res.json({ success: true, message: 'Successfully applied', matchScore, status: application.status });
     } else {
-      res.status(400).json({ message: 'Skill match too low to apply', matchScore });
+      return res.json({ success: false, message: 'Skill match too low to apply', matchScore });
     }
   } catch (error) {
     next(error);

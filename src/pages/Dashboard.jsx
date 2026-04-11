@@ -47,6 +47,10 @@ const Dashboard = () => {
   const handleApply = async (projectId) => {
     try {
       const { data } = await applyToProject(projectId, user?.skills || []);
+      if (!data.success && data.success !== undefined) {
+        alert(`Application Failed: ${data.message} (Match Score: ${data.matchScore}%)`);
+        return;
+      }
       alert(`Success: ${data.message} (Match Score: ${data.matchScore}%)`);
       
       // Mutate local state optimally to reflect database changes visually
