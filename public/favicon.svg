@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none">
+	<rect x="2" y="4" width="9" height="16" rx="2" fill="url(#tf-left-favicon)" />
+	<rect x="13" y="4" width="9" height="9" rx="2" fill="url(#tf-top-favicon)" />
+	<rect x="13" y="15" width="9" height="5" rx="2" fill="url(#tf-bottom-favicon)" />
+	<defs>
+		<linearGradient id="tf-left-favicon" x1="2" y1="4" x2="11" y2="20" gradientUnits="userSpaceOnUse">
+			<stop stop-color="#58A6FF" />
+			<stop offset="1" stop-color="#1F6FEB" />
+		</linearGradient>
+		<linearGradient id="tf-top-favicon" x1="13" y1="4" x2="22" y2="13" gradientUnits="userSpaceOnUse">
+			<stop stop-color="#3FB950" />
+			<stop offset="1" stop-color="#1A7F37" />
+		</linearGradient>
+		<linearGradient id="tf-bottom-favicon" x1="13" y1="15" x2="22" y2="20" gradientUnits="userSpaceOnUse">
+			<stop stop-color="#F2CC60" />
+			<stop offset="1" stop-color="#DB6D28" />
+		</linearGradient>
+	</defs>
+</svg>
