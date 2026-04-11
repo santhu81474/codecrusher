@@ -11,7 +11,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: ['https://codecrusher-frontend.onrender.com', 'http://localhost:5173'],
+    origin: ['http://localhost:3001', 'http://127.0.0.1:3001', 'http://localhost:5173', 'http://127.0.0.1:5173'],
     methods: ['GET', 'POST'],
     credentials: true
   }
@@ -19,7 +19,7 @@ const io = socketIo(server, {
 
 // Global Middleware
 app.use(cors({
-  origin: ['https://codecrusher-frontend.onrender.com', 'http://localhost:5173'],
+  origin: ['http://localhost:3001', 'http://127.0.0.1:3001', 'http://localhost:5173', 'http://127.0.0.1:5173'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -72,7 +72,7 @@ console.log('ENV CHECK:', process.env.MONGO_URI ? 'Loaded' : 'Missing');
 console.log('Using MONGO_URI value:', process.env.MONGO_URI);
 
 // Start the Protocol
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 server.listen(PORT, () => {
   console.log(`TeamForge Backend Protocol Active on Port ${PORT} ⚡`);
 });
