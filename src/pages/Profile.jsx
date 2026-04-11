@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 import SkillBadges from '../components/SkillBadges';
+import ScoreRing from '../components/ScoreRing';
 import Chart from 'react-apexcharts';
 import { updateProfile, fetchProjects, fetchUserApplications } from '../services/api';
 
@@ -183,6 +184,19 @@ const Profile = () => {
           </div>
 
           <Link to="/skill-test" className="btn btn-primary mono" style={{ width: '100%', marginTop: 24, fontSize: 12 }}>Run Skill Validation</Link>
+        </section>
+
+        {/* Dynamic Metric Ring */}
+        <section className="glass-panel scan-line" style={{ padding: '24px' }}>
+          <div className="mono" style={{ fontSize: 12, color: 'var(--neon-green)', letterSpacing: 2, marginBottom: '24px', textAlign: 'center' }}>
+            CRUSHER METRIC
+          </div>
+          <ScoreRing 
+            codeActivity={Math.min((ownedProjects.length + applications.length) * 15, 100)} 
+            collaboration={Math.min((user?.rating || 0) * 20, 100)} 
+            challengeWins={Math.min((user?.challengesSolved || 0) * 25, 100)} 
+            profileCompleteness={(user?.githubUrl ? 50 : 0) + (user?.linkedinUrl ? 50 : 0)} 
+          />
         </section>
       </aside>
 
