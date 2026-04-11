@@ -10,8 +10,19 @@ router.post('/chat', protect, async (req, res) => {
     const response = await chatWithGemini(prompt);
     res.json({ response });
   } catch (error) {
-    console.error('FULL GEMINI ERROR:', error?.response?.data || error?.message || error);
-    res.status(500).json({ error: 'Gemini chat failed.', details: error?.message });
+    let details = 'Unknown error occurred.';
+    if (error.status === 429) {
+      details = 'AI Quota exceeded. Please try again later or check your API key billing.';
+    } else if (error.message) {
+      try {
+        const parsed = JSON.parse(error.message);
+        details = parsed.error?.message || error.message;
+      } catch (e) {
+        details = error.message;
+      }
+    }
+    console.error('FULL GEMINI ERROR:', error);
+    res.status(error.status === 429 ? 429 : 500).json({ error: 'Gemini chat failed.', details });
   }
 });
 

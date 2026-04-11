@@ -69,8 +69,8 @@ Return ONLY JSON:
  * Chat
  */
 const chatWithGemini = async (prompt) => {
-  const systemContext = `You are a helpful AI Assistant integrated into TeamForge.
-TeamForge is a coding and collaboration platform where developers can team up, tackle challenges, and build projects.
+  const systemContext = `You are a helpful AI Assistant integrated into CodeCrusher.
+CodeCrusher is a coding and collaboration platform where developers can team up, tackle challenges, and build projects.
 Features on the Navigation Bar include:
 - Dashboard: View your stats, recent activity, and rank.
 - Explore: Find new projects, teams, and peers to collaborate with.
@@ -80,7 +80,7 @@ Features on the Navigation Bar include:
 - Arena: Solve interactive algorithm challenges to gain XP.
 - Forge: Save, share, and star code snippets or components you've built.
 - Skill Tests: Take exams to prove your proficiency in different languages.
-- AI Assistant: This exact chat portal, where you assist the user..
+- AI Assistant: This exact chat portal, where you assist the user.
 
 Always respond naturally and professionally as a knowledgeable senior software engineer and mentor. Do not use overly robotic, hacker, or cyberpunk themes. Be concise, technical, and helpful.
 
