@@ -79,17 +79,22 @@ const TerminalChat = () => {
   };
 
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-        <h1 className="page-title" style={{ margin: 0 }}>Terminal Chat</h1>
-        <button 
-          onClick={() => navigate(-1)} 
-          className="btn btn-outline mono" 
-          style={{ fontSize: '13px', padding: '6px 16px' }}
-        >
-          [X] Close Connection
-        </button>
-      </div>
+    <div style={{ maxWidth: '800px', margin: '0 auto', position: 'relative' }}>
+      <h1 className="page-title" style={{ margin: '0 0 16px 0' }}>Terminal Chat</h1>
+      <button 
+        onClick={() => navigate(-1)} 
+        style={{ 
+          position: 'absolute', top: '4px', right: '0', 
+          background: 'transparent', border: 'none', 
+          color: 'var(--text-muted)', cursor: 'pointer', fontSize: '20px' 
+        }}
+        aria-label="Close"
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
       <div className="card glass mono" style={{ 
         height: '500px', 
         display: 'flex', 

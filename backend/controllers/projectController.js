@@ -42,10 +42,13 @@ const getProjects = async (req, res, next) => {
         path: 'ownerId',
         select: 'name email isDemo',
         match: { isDemo: { $ne: true }, email: { $not: /demo/i } }
-      });
+      })
+      .sort({ createdAt: -1 })
+      .lean();
     
     // Filter out projects where the owner was excluded by the populate match
     const realProjects = projects.filter(p => p.ownerId);
+    res.set('Cache-Control', 'public, max-age=60');
     res.json(realProjects);
   } catch (error) {
     next(error);

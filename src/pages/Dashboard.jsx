@@ -17,6 +17,7 @@ const Dashboard = () => {
     { id: 2, text: 'Node 0xB7 submitted a review', time: '5m ago' },
     { id: 3, text: 'Node 0xC3 deployed a new asset', time: '12m ago' },
   ]);
+  const [selectedProject, setSelectedProject] = useState(null);
   
   // Handling Global Search System Queries
   const location = useLocation();
@@ -25,8 +26,24 @@ const Dashboard = () => {
 
   useEffect(() => {
     const loadRealProjects = async () => {
+      // Optimistic cache load to eliminate LCP delay
+      const cached = sessionStorage.getItem('cached_projects');
+      if (cached) {
+        const data = JSON.parse(cached);
+        setProjects(data);
+        const mine = (data || []).filter(p => p.applicants?.includes(user?.id));
+        const owned = (data || []).filter(p => p.ownerId?._id === user?.id);
+        setStats({
+          totalProjects: data?.length || 0,
+          myApplications: mine.length,
+          myOwned: owned.length
+        });
+        setLoading(false); // Visually unblock instantly
+      }
+
       try {
         const { data } = await fetchProjects();
+        sessionStorage.setItem('cached_projects', JSON.stringify(data));
         setProjects(data);
         const mine = (data || []).filter(p => p.applicants?.includes(user?.id));
         const owned = (data || []).filter(p => p.ownerId?._id === user?.id);
@@ -188,7 +205,7 @@ const Dashboard = () => {
               const isOwner = project.ownerId?._id === user?.id;
               
               return (
-                <div key={project._id} className="card glass-panel neon-hover" style={{ display: 'flex', flexDirection: 'column', padding: '24px' }}>
+                <div key={project._id} className="card glass-panel neon-hover" style={{ display: 'flex', flexDirection: 'column', padding: '24px', cursor: 'pointer' }} onClick={() => setSelectedProject(project)}>
                   <div style={{ flex: 1 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
                       <h3 className="card-title mono" style={{ fontSize: '1.2rem', color: 'var(--neon-green)', margin: 0 }}>{project.title}</h3>
@@ -215,11 +232,11 @@ const Dashboard = () => {
                     <div className="mono" style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
                       STATUS: {project.applicants?.length || 0} Active Nodes
                     </div>
-                    <div style={{ display: 'flex', gap: '8px' }}>
-                      <Link to={`/projects/${project._id}/chat`} className="btn btn-outline mono" style={{ fontSize: '11px', padding: '6px 12px' }}>Terminal Chat</Link>
+                    <div style={{ display: 'flex', gap: '8px' }} onClick={(e) => e.stopPropagation()}>
+                      <Link onClick={(e) => e.stopPropagation()} to={`/projects/${project._id}/chat`} className="btn btn-outline mono" style={{ fontSize: '11px', padding: '6px 12px' }}>Terminal Chat</Link>
                       <button 
                         className={`btn ${hasApplied ? 'btn-outline' : 'btn-primary'} mono`} 
-                        onClick={() => !hasApplied && handleApply(project._id)} 
+                        onClick={(e) => { e.stopPropagation(); !hasApplied && handleApply(project._id); }} 
                         style={{ fontSize: '11px', padding: '6px 12px', opacity: hasApplied ? 0.7 : 1, cursor: hasApplied ? 'default' : 'pointer' }}
                         disabled={hasApplied}
                       >
@@ -273,6 +290,58 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* Project Details Modal */}
+      {selectedProject && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.8)', zIndex: 9999, display: 'flex', justifyContent: 'center', alignItems: 'center', backdropFilter: 'blur(4px)' }} onClick={() => setSelectedProject(null)}>
+          <div className="card glass-panel" style={{ width: '90%', maxWidth: '600px', maxHeight: '80vh', overflowY: 'auto', padding: '32px', position: 'relative' }} onClick={(e) => e.stopPropagation()}>
+            <button onClick={() => setSelectedProject(null)} style={{ position: 'absolute', top: '16px', right: '16px', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+            <h2 className="mono" style={{ color: 'var(--neon-green)', margin: '0 0 8px 0', fontSize: '1.5rem' }}>{selectedProject.title}</h2>
+            <div style={{ color: 'var(--text-muted)', fontSize: '12px', marginBottom: '24px' }}>
+              Node Owner: <span style={{ color: 'var(--link-color)' }}>{selectedProject.ownerId?.name || 'Anonymous User'}</span> | Created: {new Date(selectedProject.timestamp).toLocaleDateString()}
+            </div>
+            
+            <div style={{ marginBottom: '24px' }}>
+              <h4 className="mono" style={{ color: 'var(--text-main)', fontSize: '12px', marginBottom: '8px', textTransform: 'uppercase' }}>Description</h4>
+              <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '14px', lineHeight: '1.6', whiteSpace: 'pre-wrap' }}>{selectedProject.description}</p>
+            </div>
+
+            <div style={{ marginBottom: '24px' }}>
+              <h4 className="mono" style={{ color: 'var(--text-main)', fontSize: '12px', marginBottom: '8px', textTransform: 'uppercase' }}>Required Skills</h4>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                {selectedProject.requiredSkills?.map(skill => (
+                  <span key={skill} className="badge mono" style={{ fontSize: '12px', padding: '6px 10px' }}>{skill}</span>
+                ))}
+              </div>
+            </div>
+
+            <div style={{ marginBottom: '24px', display: 'flex', gap: '16px' }}>
+              <div style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.05)', padding: '12px', borderRadius: '8px' }}>
+                <div style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Active Nodes</div>
+                <div style={{ fontSize: '18px', fontWeight: 'bold' }}>{selectedProject.applicants?.length || 0}</div>
+              </div>
+              <div style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.05)', padding: '12px', borderRadius: '8px' }}>
+                <div style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Project ID</div>
+                <div style={{ fontSize: '12px', fontFamily: 'var(--font-mono)' }}>{selectedProject._id}</div>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '12px', marginTop: '32px' }}>
+              <Link to={`/projects/${selectedProject._id}/chat`} className="btn btn-outline mono" style={{ flex: 1, textAlign: 'center' }}>Terminal Chat</Link>
+              <button 
+                className={`btn ${selectedProject.applicants?.includes(user?.id) ? 'btn-outline' : 'btn-primary'} mono`}
+                onClick={() => !selectedProject.applicants?.includes(user?.id) && handleApply(selectedProject._id)}
+                disabled={selectedProject.applicants?.includes(user?.id)}
+                style={{ flex: 1 }}
+              >
+                {selectedProject.applicants?.includes(user?.id) ? 'Request Sent' : 'Join Request'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
