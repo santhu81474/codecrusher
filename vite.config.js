@@ -1,11 +1,11 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-
-import { cloudflare } from "@cloudflare/vite-plugin";
+import { cloudflare } from "@cloudflare/vite-plugin"
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), cloudflare()],
+
   server: {
     port: 3001,
     strictPort: true,
@@ -17,10 +17,11 @@ export default defineConfig({
       }
     }
   },
+
   build: {
     rollupOptions: {
       output: {
-        // Splitting handled by default settings for Cloudflare compatibility
+        manualChunks: undefined // 🔴 ensures no chunk splitting issue
       }
     }
   }
