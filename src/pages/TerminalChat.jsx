@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import io from 'socket.io-client';
 import { useAuth } from '../context/AuthContext';
 
@@ -7,6 +7,7 @@ const socket = io(import.meta.env.VITE_BACKEND_URL || 'http://localhost:5001');
 
 const TerminalChat = () => {
   const { id: projectId } = useParams();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
@@ -79,7 +80,16 @@ const TerminalChat = () => {
 
   return (
     <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-      <h1 className="page-title">Terminal Chat</h1>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+        <h1 className="page-title" style={{ margin: 0 }}>Terminal Chat</h1>
+        <button 
+          onClick={() => navigate(-1)} 
+          className="btn btn-outline mono" 
+          style={{ fontSize: '13px', padding: '6px 16px' }}
+        >
+          [X] Close Connection
+        </button>
+      </div>
       <div className="card glass mono" style={{ 
         height: '500px', 
         display: 'flex', 

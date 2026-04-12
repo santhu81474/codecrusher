@@ -109,13 +109,21 @@ const Dashboard = () => {
   const filteredProjects = getFilteredProjects();
 
   if (loading) return (
-    <div style={{ padding: '2rem' }}>
-      <div className="skeleton" style={{ height: 40, width: 320, margin: '0 auto 24px', borderRadius: 8 }} />
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16, marginBottom: 24 }}>
-        <div className="skeleton" style={{ height: 80, borderRadius: 12 }} />
-        <div className="skeleton" style={{ height: 80, borderRadius: 12 }} />
+    <div style={{ maxWidth: '1300px', margin: '0 auto', display: 'flex', gap: '32px', padding: '0 20px', minHeight: '80vh' }}>
+      <div style={{ flex: 7, minWidth: 0 }}>
+        <div className="skeleton" style={{ height: 100, marginBottom: 32, borderRadius: 12 }} />
+        <div className="skeleton" style={{ height: 40, width: 320, marginBottom: 24, borderRadius: 8 }} />
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 20 }}>
+          <div className="skeleton" style={{ height: 260, borderRadius: 12 }} />
+          <div className="skeleton" style={{ height: 260, borderRadius: 12 }} />
+          <div className="skeleton" style={{ height: 260, borderRadius: 12 }} />
+          <div className="skeleton" style={{ height: 260, borderRadius: 12 }} />
+        </div>
       </div>
-      <div className="skeleton" style={{ height: 220, borderRadius: 12 }} />
+      <div style={{ flex: 3, display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        <div className="skeleton" style={{ height: 350, borderRadius: 12 }} />
+        <div className="skeleton" style={{ height: 250, borderRadius: 12 }} />
+      </div>
     </div>
   );
 
@@ -209,16 +217,14 @@ const Dashboard = () => {
                     </div>
                     <div style={{ display: 'flex', gap: '8px' }}>
                       <Link to={`/projects/${project._id}/chat`} className="btn btn-outline mono" style={{ fontSize: '11px', padding: '6px 12px' }}>Terminal Chat</Link>
-                      {!isOwner && (
-                        <button 
-                          className={`btn ${hasApplied ? 'btn-outline' : 'btn-primary'} mono`} 
-                          onClick={() => !hasApplied && handleApply(project._id)} 
-                          style={{ fontSize: '11px', padding: '6px 12px', opacity: hasApplied ? 0.7 : 1, cursor: hasApplied ? 'default' : 'pointer' }}
-                          disabled={hasApplied}
-                        >
-                          {hasApplied ? 'Request Sent' : 'Join Request'}
-                        </button>
-                      )}
+                      <button 
+                        className={`btn ${hasApplied ? 'btn-outline' : 'btn-primary'} mono`} 
+                        onClick={() => !hasApplied && handleApply(project._id)} 
+                        style={{ fontSize: '11px', padding: '6px 12px', opacity: hasApplied ? 0.7 : 1, cursor: hasApplied ? 'default' : 'pointer' }}
+                        disabled={hasApplied}
+                      >
+                        {hasApplied ? 'Request Sent' : 'Join Request'}
+                      </button>
                     </div>
                   </div>
                 </div>
