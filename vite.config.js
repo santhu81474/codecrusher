@@ -20,11 +20,13 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom'],
-          'router-vendor': ['react-router-dom'],
-          'charts': ['apexcharts', 'react-apexcharts'],
-          'socket': ['socket.io-client']
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom')) return 'react-vendor';
+            if (id.includes('react-router-dom')) return 'router-vendor';
+            if (id.includes('apexcharts') || id.includes('react-apexcharts')) return 'charts';
+            if (id.includes('socket.io-client')) return 'socket';
+          }
         }
       }
     }
