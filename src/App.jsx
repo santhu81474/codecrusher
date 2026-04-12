@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 
@@ -6,24 +6,30 @@ import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
 
-// Pages
-import Login from './pages/Login';
-import Signup from './pages/Signup';
-import Dashboard from './pages/Dashboard';
-import Profile from './pages/Profile';
-import CreateProject from './pages/CreateProject';
-import SkillTest from './pages/SkillTest';
-import Applications from './pages/Applications';
-import Reviews from './pages/Reviews';
-import Leaderboard from './pages/Leaderboard';
-import ExploreProjects from './pages/ExploreProjects';
-import Arena from './pages/Arena';
-import TerminalChat from './pages/TerminalChat';
-import Forge from './pages/Forge';
-import GeminiChat from './pages/GeminiChat';
-import Bounties from './pages/Bounties';
-import Network from './pages/Network';
-import Matchmaker from './pages/Matchmaker';
+// Lazy Pages
+const Login = React.lazy(() => import('./pages/Login'));
+const Signup = React.lazy(() => import('./pages/Signup'));
+const Dashboard = React.lazy(() => import('./pages/Dashboard'));
+const Profile = React.lazy(() => import('./pages/Profile'));
+const CreateProject = React.lazy(() => import('./pages/CreateProject'));
+const SkillTest = React.lazy(() => import('./pages/SkillTest'));
+const Applications = React.lazy(() => import('./pages/Applications'));
+const Reviews = React.lazy(() => import('./pages/Reviews'));
+const Leaderboard = React.lazy(() => import('./pages/Leaderboard'));
+const ExploreProjects = React.lazy(() => import('./pages/ExploreProjects'));
+const Arena = React.lazy(() => import('./pages/Arena'));
+const TerminalChat = React.lazy(() => import('./pages/TerminalChat'));
+const Forge = React.lazy(() => import('./pages/Forge'));
+const GeminiChat = React.lazy(() => import('./pages/GeminiChat'));
+const Bounties = React.lazy(() => import('./pages/Bounties'));
+const Network = React.lazy(() => import('./pages/Network'));
+const Matchmaker = React.lazy(() => import('./pages/Matchmaker'));
+
+const LoadingFallback = () => (
+  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh', color: 'var(--neon-green)', fontFamily: 'monospace' }}>
+    Loading System Assets...
+  </div>
+);
 
 function App() {
   return (
@@ -32,7 +38,8 @@ function App() {
         <div className="app-container">
           <Navbar />
           <main className="main-content">
-            <Routes>
+            <Suspense fallback={<LoadingFallback />}>
+              <Routes>
               {/* Public Routes */}
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route path="/login" element={<Login />} />
@@ -58,6 +65,7 @@ function App() {
               {/* Fallback */}
               <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Routes>
+            </Suspense>
           </main>
         </div>
       </Router>

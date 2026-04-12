@@ -70,15 +70,17 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (projects.length > 0) {
-      const index = {};
-      projects.forEach(p => {
-        const keywords = `${p.title} ${p.description} ${p.ownerId?.name || ''}`.toLowerCase().split(/\W+/).filter(w => w.length > 2);
-        keywords.forEach(word => {
-          if (!index[word]) index[word] = new Set();
-          index[word].add(p._id);
+      setTimeout(() => {
+        const index = {};
+        projects.forEach(p => {
+          const keywords = `${p.title} ${p.description} ${p.ownerId?.name || ''}`.toLowerCase().split(/\W+/).filter(w => w.length > 2);
+          keywords.forEach(word => {
+            if (!index[word]) index[word] = new Set();
+            index[word].add(p._id);
+          });
         });
-      });
-      setInvertedIndex(index);
+        setInvertedIndex(index);
+      }, 0);
     }
   }, [projects]);
 
@@ -206,11 +208,16 @@ const Dashboard = () => {
                       STATUS: {project.applicants?.length || 0} Active Nodes
                     </div>
                     <div style={{ display: 'flex', gap: '8px' }}>
-                      {(isOwner || hasApplied) && (
-                        <Link to={`/projects/${project._id}/chat`} className="btn btn-outline mono" style={{ fontSize: '11px', padding: '6px 12px' }}>Terminal Chat</Link>
-                      )}
-                      {!isOwner && !hasApplied && (
-                        <button className="btn btn-primary mono" onClick={() => handleApply(project._id)} style={{ fontSize: '11px', padding: '6px 12px' }}>Join Request</button>
+                      <Link to={`/projects/${project._id}/chat`} className="btn btn-outline mono" style={{ fontSize: '11px', padding: '6px 12px' }}>Terminal Chat</Link>
+                      {!isOwner && (
+                        <button 
+                          className={`btn ${hasApplied ? 'btn-outline' : 'btn-primary'} mono`} 
+                          onClick={() => !hasApplied && handleApply(project._id)} 
+                          style={{ fontSize: '11px', padding: '6px 12px', opacity: hasApplied ? 0.7 : 1, cursor: hasApplied ? 'default' : 'pointer' }}
+                          disabled={hasApplied}
+                        >
+                          {hasApplied ? 'Request Sent' : 'Join Request'}
+                        </button>
                       )}
                     </div>
                   </div>

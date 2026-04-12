@@ -16,5 +16,17 @@ export default defineConfig({
         secure: false,
       }
     }
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom'],
+          'router-vendor': ['react-router-dom'],
+          'charts': ['apexcharts', 'react-apexcharts'],
+          'socket': ['socket.io-client']
+        }
+      }
+    }
   }
 })

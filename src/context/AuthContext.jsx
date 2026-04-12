@@ -39,6 +39,7 @@ export const AuthProvider = ({ children }) => {
             localStorage.removeItem('user');
           }
         }
+        setLoading(false); // Unblock render before network call
 
         try {
           const { data } = await getProfile();
@@ -50,8 +51,9 @@ export const AuthProvider = ({ children }) => {
           setToken(null);
           setUser(null);
         }
+      } else {
+        setLoading(false);
       }
-      setLoading(false);
     };
     initAuth();
   }, []);
@@ -96,7 +98,7 @@ export const AuthProvider = ({ children }) => {
   }, [user]);
   return (
     <AuthContext.Provider value={{ user, token, login, signup, logout, loading, setUserFromProfile: persistUser }}>
-      {!loading && children}
+      {children}
     </AuthContext.Provider>
   );
 };
