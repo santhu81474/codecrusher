@@ -21,7 +21,7 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: undefined // 🔴 ensures no chunk splitting issue
+        manualChunks: () => null// 🔴 ensures no chunk splitting issue
       }
     }
   }
