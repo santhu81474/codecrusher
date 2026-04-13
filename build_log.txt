@@ -35,38 +35,49 @@ dist/assets/chunk-QFMPRPBF-B5KorBS6.js    41.32 kB Γöé gzip:  14.62 kB
 dist/assets/index-HBRAFSAo.js            194.43 kB Γöé gzip:  61.05 kB
 dist/assets/Profile-tkKY0XvR.js          532.69 kB Γöé gzip: 143.96 kB
 
-[32mΓ£ô built in 368ms[39m
-node.exe : [33m[plugin 
-builtin:vite-reporter] 
+[32mΓ£ô built in 353ms[39m
+node.exe : 
+[33m[plugin builtin:v
+ite-reporter] 
 At line:1 char:1
-+ & "C:\Program 
-Files\nodejs/node.exe" 
++ & "C:\Program Files\
+nodejs/node.exe" 
 "C:\Program 
-Files\nodejs/node_mo ...
-+ ~~~~~~~~~~~~~~~~~~~~~~~~
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-~~~~~~~~~~~~~~~~~~~
-    + CategoryInfo        
-      : NotSpecified: (  
-  [33m[plugin builtin:v   
- ite-reporter] :String    
-) [], RemoteException
-    + FullyQualifiedError 
-   Id : NativeCommandErr  
-  or
+Files\nodejs/node_mo 
+...
++ ~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
+~~~~~
+    + CategoryInfo    
+          : 
+NotSpecified: (    
+[33m[plugin builtin:v 
+   ite-reporter] 
+:String    ) [], 
+RemoteException
+    + 
+FullyQualifiedError   
+ Id : 
+NativeCommandErr    or
  
 (!) Some chunks are 
-larger than 500 kB after 
-minification. Consider:
-- Using dynamic import() 
-to code-split the 
+larger than 500 kB 
+after minification. 
+Consider:
+- Using dynamic 
+import() to 
+code-split the 
 application
-- Use build.rolldownOption
-s.output.codeSplitting to 
-improve chunking: https://
-rolldown.rs/reference/Outp
-utOptions.codeSplitting
-- Adjust chunk size limit 
-for this warning via build
-.chunkSizeWarningLimit.[3
-9m
+- Use build.rolldownOp
+tions.output.codeSplit
+ting to improve 
+chunking: https://roll
+down.rs/reference/Outp
+utOptions.codeSplittin
+g
+- Adjust chunk size 
+limit for this 
+warning via build.chun
+kSizeWarningLimit.[39
+m
