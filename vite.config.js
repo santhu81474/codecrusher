@@ -3,7 +3,10 @@ import react from '@vitejs/plugin-react'
 import { cloudflare } from "@cloudflare/vite-plugin"
 
 export default defineConfig({
-  plugins: [react(), cloudflare()],
+  plugins: [
+    react(),
+    cloudflare()
+  ],
 
   server: {
     port: 3001,
@@ -19,7 +22,14 @@ export default defineConfig({
 
   build: {
     rollupOptions: {
-      output: {}   // ✅ NOTHING here
+      output: {
+        // ✅ Force correct function format (overrides plugin issues)
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            return 'vendor'
+          }
+        }
+      }
     }
   }
 })
