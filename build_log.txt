@@ -37,7 +37,7 @@ dist/assets/chunk-QFMPRPBF-BNGK9GyQ.js     41.36 kB Γöé gzip:  14.64 kB
 dist/assets/react-vendor-SfzWmvSX.js      182.16 kB Γöé gzip:  57.34 kB
 dist/assets/charts-vendor-BMoYA3Py.js     522.79 kB Γöé gzip: 141.01 kB
 
-[32mΓ£ô built in 361ms[39m
+[32mΓ£ô built in 377ms[39m
 node.exe : [33m[plugin 
 builtin:vite-reporter] 
 At line:1 char:1
