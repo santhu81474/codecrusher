@@ -18,13 +18,5 @@ export default defineConfig({
         secure: false,
       }
     }
-  },
-
-  build: {
-    rollupOptions: {
-      output: {
-        // ✅ Force correct function format (overrides plugin issues)
-      }
-    }
   }
 })
