@@ -1,11 +1,32 @@
-require('dotenv').config();
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const path = require('path');
-const http = require('http');
-const socketIo = require('socket.io');
-const { errorHandler } = require('./middleware/errorHandler');
+import 'dotenv/config';
+import express from 'express';
+import mongoose from 'mongoose';
+import cors from 'cors';
+import path from 'path';
+import http from 'http';
+import { Server } from 'socket.io';
+import { fileURLToPath } from 'url';
+import { errorHandler } from './middleware/errorHandler.js';
+
+import authRoutes from './routes/authRoutes.js';
+import userRoutes from './routes/userRoutes.js';
+import projectRoutes from './routes/projectRoutes.js';
+import testRoutes from './routes/testRoutes.js';
+import reviewRoutes from './routes/reviewRoutes.js';
+import leaderboardRoutes from './routes/leaderboardRoutes.js';
+import challengeRoutes from './routes/challengeRoutes.js';
+import snippetRoutes from './routes/snippetRoutes.js';
+import geminiRoutes from './routes/geminiRoutes.js';
+import aiRoutes from './routes/aiRoutes.js';
+import ragRoutes from './routes/ragRoutes.js';
+import terminalRoutes from './routes/terminalRoutes.js';
+import codecastRoutes from './routes/codecastRoutes.js';
+import challengeRoomRoutes from './routes/challengeRoomRoutes.js';
+
+import Message from './models/Message.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const server = http.createServer(app);
@@ -20,7 +41,7 @@ if (process.env.FRONTEND_URL) {
   allowedOrigins.push(process.env.FRONTEND_URL);
 }
 
-const io = socketIo(server, {
+const io = new Server(server, {
   cors: {
     origin: function (origin, callback) {
       callback(null, true);
@@ -47,24 +68,27 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/api/auth', require('./routes/authRoutes'));
-app.use('/api/users', require('./routes/userRoutes'));
-app.use('/api/projects', require('./routes/projectRoutes'));
-app.use('/api/tests', require('./routes/testRoutes'));
-app.use('/api/reviews', require('./routes/reviewRoutes'));
-app.use('/api/leaderboard', require('./routes/leaderboardRoutes'));
-app.use('/api/challenges', require('./routes/challengeRoutes'));
-app.use('/api/snippets', require('./routes/snippetRoutes'));
-app.use('/api/gemini', require('./routes/geminiRoutes'));
-app.use('/api/ai', require('./routes/aiRoutes'));
-app.use('/api/rag', require('./routes/ragRoutes'));
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/projects', projectRoutes);
+app.use('/api/tests', testRoutes);
+app.use('/api/reviews', reviewRoutes);
+app.use('/api/leaderboard', leaderboardRoutes);
+app.use('/api/challenges', challengeRoutes);
+app.use('/api/snippets', snippetRoutes);
+app.use('/api/gemini', geminiRoutes);
+app.use('/api/ai', aiRoutes);
+app.use('/api/rag', ragRoutes);
+app.use('/api/terminal', terminalRoutes);
+app.use('/api/codecast', codecastRoutes);
+app.use('/api/challenge-room', challengeRoomRoutes);
 
-// ...existing code...
+
+// Serve frontend static files
+app.use(express.static(path.join(__dirname, '..', 'dist')));
 
 // Global Error Handler
 app.use(errorHandler);
-
-const Message = require('./models/Message');
 
 io.on('connection', (socket) => {
   console.log('New user connected to Terminal Forge');
@@ -106,6 +130,68 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     console.log('User disconnected from node');
   });
+});
+
+const challengeRooms = io.of('/challenge-rooms');
+challengeRooms.on('connection', (socket) => {
+    console.log('a user connected to challenge rooms');
+
+    socket.on('join_room', (roomId) => {
+        socket.join(roomId);
+        socket.to(roomId).emit('player_joined', { userId: socket.id });
+    });
+
+    socket.on('start_challenge', (roomId) => {
+        challengeRooms.to(roomId).emit('challenge_started');
+    });
+
+    socket.on('player_progress', (data) => {
+        socket.to(data.roomId).emit('opponent_progress', { progress: data.progress });
+    });
+
+    socket.on('player_finished', (data) => {
+        challengeRooms.to(data.roomId).emit('opponent_finished', { results: data.results });
+    });
+
+    socket.on('disconnect', () => {
+        console.log('user disconnected from challenge rooms');
+    });
+});
+
+const codecastIo = io.of('/codecast');
+codecastIo.on('connection', (socket) => {
+    console.log('A user connected to CodeCast');
+
+    socket.on('join_cast', (roomId) => {
+        socket.join(roomId);
+        const room = codecastIo.adapter.rooms.get(roomId);
+        const count = room ? room.size : 0;
+        codecastIo.to(roomId).emit('viewer_count', count);
+        console.log(`A user joined cast ${roomId}. Viewers: ${count}`);
+    });
+
+    socket.on('code_update', (data) => {
+        socket.to(data.roomId).emit('code_updated', data.code);
+    });
+
+    socket.on('send_chat_message', (data) => {
+        codecastIo.to(data.roomId).emit('receive_chat_message', {
+            user: data.user,
+            message: data.message,
+        });
+    });
+
+    socket.on('leave_cast', (roomId) => {
+        socket.leave(roomId);
+        const room = codecastIo.adapter.rooms.get(roomId);
+        const count = room ? room.size : 0;
+        codecastIo.to(roomId).emit('viewer_count', count);
+        console.log(`A user left cast ${roomId}. Viewers: ${count}`);
+    });
+
+    socket.on('disconnect', () => {
+        console.log('A user disconnected from CodeCast');
+    });
 });
 
 

@@ -3,7 +3,18 @@ const User = require('../models/User');
 
 const getSnippets = async (req, res, next) => {
   try {
-    const snippets = await Snippet.find({}).populate('authorId', 'name');
+    const snippets = await Snippet.find({}).populate('authorId', 'name username').sort({ createdAt: -1 });
+    res.json(snippets);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getUserSnippets = async (req, res, next) => {
+  try {
+    const snippets = await Snippet.find({ authorId: req.params.userId })
+      .populate('authorId', 'name username')
+      .sort({ createdAt: -1 });
     res.json(snippets);
   } catch (error) {
     next(error);
@@ -21,7 +32,8 @@ const createSnippet = async (req, res, next) => {
       tags,
       authorId: req.user.id
     });
-    res.status(201).json(snippet);
+    const populated = await snippet.populate('authorId', 'name username');
+    res.status(201).json(populated);
   } catch (error) {
     next(error);
   }
@@ -43,11 +55,12 @@ const starSnippet = async (req, res, next) => {
       snippet.stars += 1;
       
       // Boost author profile rating
-      await User.findByIdAndUpdate(snippet.authorId, { $inc: { points: 10 } });
+      await User.findByIdAndUpdate(snippet.authorId, { $inc: { karma: 2 } });
     }
 
     await snippet.save();
-    res.json(snippet);
+    const populated = await snippet.populate('authorId', 'name username');
+    res.json(populated);
   } catch (error) {
     next(error);
   }
@@ -63,17 +76,18 @@ const updateSnippet = async (req, res, next) => {
     }
 
     if (snippet.authorId.toString() !== req.user.id) {
-      return res.status(401).json({ message: 'Not authorized to edit this snippet' });
+      return res.status(403).json({ message: 'Not authorized to edit this snippet' });
     }
 
     snippet.title = title || snippet.title;
-    snippet.description = description || snippet.description;
+    snippet.description = description !== undefined ? description : snippet.description;
     snippet.code = code || snippet.code;
     snippet.language = language || snippet.language;
     snippet.tags = tags || snippet.tags;
 
     await snippet.save();
-    res.json(snippet);
+    const populated = await snippet.populate('authorId', 'name username');
+    res.json(populated);
   } catch (error) {
     next(error);
   }
@@ -88,7 +102,7 @@ const deleteSnippet = async (req, res, next) => {
     }
 
     if (snippet.authorId.toString() !== req.user.id) {
-      return res.status(401).json({ message: 'Not authorized to delete this snippet' });
+      return res.status(403).json({ message: 'Not authorized to delete this snippet' });
     }
 
     await snippet.deleteOne();
@@ -98,4 +112,4 @@ const deleteSnippet = async (req, res, next) => {
   }
 };
 
-module.exports = { getSnippets, createSnippet, starSnippet, updateSnippet, deleteSnippet };
+module.exports = { getSnippets, getUserSnippets, createSnippet, starSnippet, updateSnippet, deleteSnippet };

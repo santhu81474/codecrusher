@@ -6,6 +6,17 @@ export default defineConfig({
     react(),
   ],
 
+  build: {
+    rollupOptions: {
+      output: {
+        // Content hashing prevents stale cache issues
+        entryFileNames: 'assets/[name]-[hash].js',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash][extname]',
+      }
+    }
+  },
+
   server: {
     port: 3001,
     strictPort: true,
@@ -14,6 +25,10 @@ export default defineConfig({
         target: 'http://localhost:5001',
         changeOrigin: true,
         secure: false,
+      },
+      '/socket.io': {
+        target: 'http://localhost:5001',
+        ws: true,
       }
     }
   }

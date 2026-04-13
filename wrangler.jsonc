@@ -6,7 +6,9 @@
     "enabled": true
   },
   "assets": {
-    "not_found_handling": "single-page-application"
+    "not_found_handling": "single-page-application",
+    "html_handling": "auto-trailing-slash",
+    "serve_directly": true
   },
   "compatibility_flags": [
     "nodejs_compat"

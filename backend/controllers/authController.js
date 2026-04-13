@@ -6,9 +6,26 @@ const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET || 'super_secret_jwt_signature_key', { expiresIn: '30d' });
 };
 
+// Generate a unique username from the name
+const generateUsername = async (name) => {
+  const base = name.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 15);
+  const suffix = Math.floor(Math.random() * 9000 + 1000);
+  let username = `${base}${suffix}`;
+  
+  // Ensure uniqueness
+  let exists = await User.findOne({ username });
+  let attempts = 0;
+  while (exists && attempts < 10) {
+    username = `${base}${Math.floor(Math.random() * 90000 + 10000)}`;
+    exists = await User.findOne({ username });
+    attempts++;
+  }
+  return username;
+};
+
 const register = async (req, res, next) => {
   try {
-    const { name, email, password, skills, githubUrl, linkedinUrl } = req.body;
+    const { name, email, password, skills, githubUrl, linkedinUrl, username: requestedUsername } = req.body;
     if (!name || !email || !password) {
       return res.status(400).json({ message: 'Please add all required fields' });
     }
@@ -17,11 +34,24 @@ const register = async (req, res, next) => {
       return res.status(400).json({ message: 'User already exists' });
     }
 
+    // Generate username if not provided
+    let username = requestedUsername;
+    if (!username || username.trim() === '') {
+      username = await generateUsername(name);
+    } else {
+      // Check if requested username is taken
+      const usernameTaken = await User.findOne({ username });
+      if (usernameTaken) {
+        username = await generateUsername(name);
+      }
+    }
+
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const user = await User.create({
       name,
+      username,
       email,
       password: hashedPassword,
       skills: skills || [],
@@ -32,11 +62,13 @@ const register = async (req, res, next) => {
     if (user) {
       res.status(201).json({
         _id: user.id, 
-        name: user.name, 
+        name: user.name,
+        username: user.username,
         email: user.email, 
         skills: user.skills,
         githubUrl: user.githubUrl,
         linkedinUrl: user.linkedinUrl,
+        karma: user.karma,
         token: generateToken(user._id)
       });
     } else {
@@ -55,11 +87,14 @@ const login = async (req, res, next) => {
     if (user && (await bcrypt.compare(password, user.password))) {
       res.json({
         _id: user.id, 
-        name: user.name, 
+        name: user.name,
+        username: user.username,
         email: user.email, 
         skills: user.skills,
         githubUrl: user.githubUrl,
         linkedinUrl: user.linkedinUrl,
+        karma: user.karma,
+        connections: user.connections,
         token: generateToken(user._id)
       });
     } else {

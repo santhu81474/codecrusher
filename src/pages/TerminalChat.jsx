@@ -1,220 +1,190 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import io from 'socket.io-client';
-import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
+import { useAuth } from '../context/AuthContext';
 
-const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5001';
-// Keep one persistent connection per client
-const socket = io(backendUrl, { autoConnect: false });
+// Lightweight code block renderer (no dependency needed)
+const CodeBlock = ({ language, code }) => (
+  <div style={{ margin: '8px 0', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border)' }}>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '4px 12px', background: 'rgba(0,0,0,0.3)', fontSize: '11px', color: 'var(--text-muted)' }}>
+      <span>{language}</span>
+      <button
+        onClick={() => { navigator.clipboard.writeText(code); }}
+        style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '11px', padding: '2px 6px' }}
+      >
+        Copy
+      </button>
+    </div>
+    <pre style={{
+      padding: '12px', margin: 0, fontFamily: 'var(--font-mono)', fontSize: '12px',
+      lineHeight: 1.5, backgroundColor: 'var(--bg-color)', color: '#e2e8f0', overflowX: 'auto', whiteSpace: 'pre'
+    }}>
+      {code}
+    </pre>
+  </div>
+);
 
 const TerminalChat = () => {
-  const { id: projectId } = useParams();
-  const navigate = useNavigate();
   const { user } = useAuth();
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false);
   const chatEndRef = useRef(null);
 
   useEffect(() => {
-    // Load chat history
-    const loadHistory = async () => {
+    const fetchHistory = async () => {
       try {
-        const { data } = await api.get(`/projects/${projectId}/messages`);
-        const formatted = data.map(m => ({
-          sender: m.senderId?.name || 'Unknown',
-          text: m.text,
-          timestamp: new Date(m.timestamp).toLocaleTimeString()
-        }));
-        setMessages(formatted);
-      } catch (err) {
-        console.error('Failed to load chat history:', err);
+        const { data } = await api.get('/terminal/history');
+        setMessages(data);
+      } catch (error) {
+        console.error('Failed to fetch terminal history:', error);
       }
     };
-    
-    if (projectId) {
-      loadHistory();
-      socket.connect();
-      socket.emit('join_project', projectId);
-
-      const handleReceive = (data) => {
-        setMessages((prev) => [...prev, {
-          sender: data.sender || 'Unknown',
-          text: data.text,
-          timestamp: data.timestamp || new Date().toLocaleTimeString()
-        }]);
-      };
-
-      socket.on('receive_message', handleReceive);
-
-      return () => {
-        socket.off('receive_message', handleReceive);
-        socket.disconnect();
-      };
-    }
-  }, [projectId]);
+    fetchHistory();
+  }, []);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const handleSend = (e) => {
+  const handleSend = async (e) => {
     e.preventDefault();
-    if (!input.trim()) return;
+    if (!input.trim() || input.length > 250) return;
 
-    if (input.startsWith('/')) return; // Handled in onKeyDown
-
-    const msgData = {
-      projectId,
-      sender: user.name,
-      senderId: user.id || user._id, // Pass sender ID to save to DB
-      text: input,
-      timestamp: new Date().toLocaleTimeString()
-    };
-
-    socket.emit('send_message', msgData);
+    const userMessage = { role: 'user', content: input, createdAt: new Date().toISOString(), _id: Date.now() };
+    setMessages(prev => [...prev, userMessage]);
+    const currentInput = input;
     setInput('');
-  };
+    setLoading(true);
 
-  const processCommand = (cmd) => {
-    const parts = cmd.split(' ');
-    const action = parts[0].toLowerCase();
-    
-    switch(action) {
-      case '/help':
-        return 'Available commands: /deploy, /status, /clear, /help';
-      case '/deploy':
-        return 'Initiating deployment sequence... Deployment to Staging successful.';
-      case '/status':
-        return 'All systems operational. Node health: 98%.';
-      case '/clear':
-        setMessages([]);
-        return 'Buffer cleared.';
-      default:
-        return `Unknown command: ${action}`;
+    try {
+      const { data } = await api.post('/terminal/message', { content: currentInput });
+      setMessages(prev => [...prev.filter(m => m._id !== userMessage._id), data.userMessage, data.assistantMessage]);
+    } catch (error) {
+      console.error('Error sending message:', error);
+      const errorMessage = { role: 'assistant', content: 'Error: Could not get a response from the assistant.', createdAt: new Date().toISOString(), _id: Date.now() + 1 };
+      setMessages(prev => [...prev.filter(m => m._id !== userMessage._id), userMessage, errorMessage]);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const onInputChange = (e) => {
-    // Enforce 250 character limit
-    if (e.target.value.length <= 250) {
-      setInput(e.target.value);
-    }
-  };
+  const renderContent = (content) => {
+    const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
+    const parts = [];
+    let lastIndex = 0;
+    let match;
 
-  const onKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      if (input.startsWith('/')) {
-        const response = processCommand(input);
-        setMessages(prev => [...prev, { sender: 'SYSTEM', text: response, timestamp: new Date().toLocaleTimeString() }]);
-        setInput('');
-        e.preventDefault();
+    while ((match = codeBlockRegex.exec(content)) !== null) {
+      if (match.index > lastIndex) {
+        parts.push({ type: 'text', value: content.substring(lastIndex, match.index) });
       }
+      parts.push({ type: 'code', language: match[1] || 'text', value: match[2] });
+      lastIndex = codeBlockRegex.lastIndex;
     }
+    if (lastIndex < content.length) {
+      parts.push({ type: 'text', value: content.substring(lastIndex) });
+    }
+
+    return parts.map((part, index) => {
+      if (part.type === 'code') {
+        return <CodeBlock key={index} language={part.language} code={part.value} />;
+      }
+      // Render text with line breaks and inline code
+      const rendered = part.value.split('\n').map((line, i) => {
+        // Handle inline code
+        const inlineParts = line.split(/(`[^`]+`)/g).map((seg, j) => {
+          if (seg.startsWith('`') && seg.endsWith('`')) {
+            return <code key={j} style={{ background: 'rgba(129,140,248,0.1)', padding: '1px 5px', borderRadius: '3px', fontSize: '12px', fontFamily: 'var(--font-mono)' }}>{seg.slice(1, -1)}</code>;
+          }
+          // Bold
+          return seg.split(/(\*\*.*?\*\*)/g).map((s, k) => {
+            if (s.startsWith('**') && s.endsWith('**')) {
+              return <strong key={k}>{s.slice(2, -2)}</strong>;
+            }
+            return s;
+          });
+        });
+        return <React.Fragment key={i}>{inlineParts}{i < part.value.split('\n').length - 1 && <br />}</React.Fragment>;
+      });
+      return <span key={index}>{rendered}</span>;
+    });
   };
+
+  const charCount = input.length;
 
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', position: 'relative' }}>
-      <h1 className="page-title" style={{ margin: '0 0 16px 0' }}>Terminal Chat</h1>
-      <button 
-        onClick={() => navigate(-1)} 
-        style={{ 
-          position: 'absolute', top: '4px', right: '0', 
-          background: 'transparent', border: 'none', 
-          color: 'var(--text-muted)', cursor: 'pointer', fontSize: '20px' 
-        }}
-        aria-label="Close"
-      >
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <line x1="18" y1="6" x2="6" y2="18"></line>
-          <line x1="6" y1="6" x2="18" y2="18"></line>
-        </svg>
-      </button>
-      <div className="card glass mono" style={{ 
-        height: '500px', 
-        display: 'flex', 
-        flexDirection: 'column', 
-        padding: '0', 
-        border: '1px solid var(--neon-green)',
-        boxShadow: '0 0 15px rgba(46, 160, 67, 0.2)'
-      }}>
-        {/* Terminal Header */}
-        <div style={{ 
-          backgroundColor: '#161b22', 
-          padding: '8px 16px', 
-          borderBottom: '1px solid var(--border-color)',
-          fontSize: '12px',
-          color: 'var(--text-muted)',
-          display: 'flex',
-          justifyContent: 'space-between'
-        }}>
-          <span>Chat Session: PROJECT_{projectId?.slice(-6).toUpperCase()}</span>
-          <span>● ● ●</span>
-        </div>
-
-        {/* Messages Bin */}
-        <div style={{ 
-          flex: 1, 
-          overflowY: 'auto', 
-          padding: '20px', 
-          backgroundColor: '#0d1117',
-          display: 'flex',
-          flexDirection: 'column'
-        }}>
-          <div style={{ color: 'var(--neon-green)', marginBottom: '16px', fontSize: '13px' }}>
-            [System] Connection established. Welcome to the chat.
+    <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 120px)', maxWidth: '800px', margin: '0 auto', padding: '0 20px' }}>
+      <h1 className="page-title" style={{ marginBottom: '16px' }}>AI Terminal</h1>
+      
+      {/* Messages */}
+      <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px', paddingBottom: '16px' }}>
+        {messages.length === 0 && !loading && (
+          <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-muted)' }}>
+            <p style={{ fontSize: '14px', marginBottom: '8px' }}>Ask me anything about coding, debugging, or the CodeCrusher platform.</p>
+            <p style={{ fontSize: '12px' }}>Messages are saved and persist across sessions.</p>
           </div>
-          {messages.map((m, i) => (
-             <div key={i} style={{ marginBottom: '10px', fontSize: '14px', lineHeight: 1.4, display: 'flex' }}>
-              <span style={{ color: m.sender === 'SYSTEM' ? '#f2cc60' : 'var(--neon-green)', marginRight: '8px', flexShrink: 0 }}>
-                [{m.timestamp}] {m.sender}:
-              </span>
-              <span style={{ 
-                color: 'var(--text-main)', 
-                wordBreak: 'break-word', 
-                whiteSpace: 'pre-wrap',
-                flexGrow: 1
-              }}>{m.text}</span>
+        )}
+        {messages.map((msg, index) => (
+          <div key={msg._id || index} style={{ display: 'flex', justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start' }}>
+            <div style={{
+              maxWidth: '85%', padding: '12px 16px', borderRadius: '12px',
+              backgroundColor: msg.role === 'user' ? 'var(--primary-glow)' : 'var(--surface-2)',
+              border: `1px solid ${msg.role === 'user' ? 'rgba(129,140,248,0.2)' : 'var(--border)'}`,
+              wordBreak: 'break-word', overflowWrap: 'break-word', whiteSpace: 'pre-wrap', overflow: 'hidden'
+            }}>
+              <div style={{ fontSize: '13px', lineHeight: 1.6, color: 'var(--text-primary)' }}>
+                {renderContent(msg.content)}
+              </div>
+              <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '6px', textAlign: 'right' }}>
+                {new Date(msg.createdAt).toLocaleTimeString()}
+              </div>
             </div>
-          ))}
-          <div ref={chatEndRef} />
-        </div>
+          </div>
+        ))}
+        {loading && (
+          <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
+            <div style={{ padding: '12px 16px', borderRadius: '12px', backgroundColor: 'var(--surface-2)', border: '1px solid var(--border)' }}>
+              <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--primary)', animation: 'pulse 1s infinite' }} />
+                <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--primary)', animation: 'pulse 1s infinite 0.2s' }} />
+                <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--primary)', animation: 'pulse 1s infinite 0.4s' }} />
+              </div>
+            </div>
+          </div>
+        )}
+        <div ref={chatEndRef} />
+      </div>
 
-        {/* Command Input */}
-        <form onSubmit={handleSend} style={{ 
-          padding: '16px', 
-          borderTop: '1px solid var(--border-color)', 
-          display: 'flex',
-          backgroundColor: '#161b22',
-          position: 'relative'
-        }}>
-          <span style={{ color: 'var(--neon-green)', marginRight: '8px' }}>$</span>
-          <input 
-            type="text"
+      {/* Input */}
+      <div style={{ borderTop: '1px solid var(--border)', padding: '12px 0' }}>
+        <form onSubmit={handleSend}>
+          <textarea
             value={input}
-            onChange={onInputChange}
-            onKeyDown={onKeyDown}
+            onChange={(e) => setInput(e.target.value)}
             maxLength={250}
-            autoFocus
-            placeholder="Type message or /command..."
-            style={{
-              backgroundColor: 'transparent',
-              border: 'none',
-              color: 'var(--text-main)',
-              flex: 1,
-              outline: 'none',
-              fontFamily: 'var(--font-mono)',
-              fontSize: '14px'
+            placeholder="Ask the AI anything..."
+            className="form-input"
+            rows="2"
+            style={{ resize: 'none', marginBottom: '8px', fontFamily: 'var(--font-main)' }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSend(e);
+              }
             }}
           />
-          <div style={{ 
-            position: 'absolute', 
-            right: '16px', 
-            bottom: '16px', 
-            fontSize: '11px', 
-            color: input.length >= 250 ? 'red' : 'var(--text-muted)' 
-          }}>
-            {input.length}/250
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: '12px', color: charCount > 200 ? 'var(--accent-red)' : 'var(--text-muted)' }}>
+              {charCount}/250
+            </span>
+            <button
+              type="submit"
+              disabled={!input.trim() || charCount > 250 || loading}
+              className="btn btn-primary"
+              style={{ padding: '8px 20px', fontSize: '13px' }}
+            >
+              {loading ? 'Thinking...' : 'Send'}
+            </button>
           </div>
         </form>
       </div>

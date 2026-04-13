@@ -2,10 +2,14 @@ const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
+  username: { type: String, required: true, unique: true, sparse: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
+  bio: { type: String, default: '' },
+  avatar: { type: String, default: '' },
   skills: { type: [String], default: [] },
   rating: { type: Number, default: 0 },
+  karma: { type: Number, default: 0 },
   projectsCompleted: { type: Number, default: 0 },
   isDemo: { type: Boolean, default: false },
   githubUrl: { type: String, default: '' },
@@ -15,5 +19,8 @@ const userSchema = new mongoose.Schema({
   connections: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
 }, { timestamps: true });
+
+userSchema.index({ username: 'text', name: 'text' });
+userSchema.index({ skills: 1 });
 
 module.exports = mongoose.model('User', userSchema);
