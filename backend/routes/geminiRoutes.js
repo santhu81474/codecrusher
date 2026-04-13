@@ -1,7 +1,8 @@
-const express = require('express');
+import express from 'express';
+import { protect } from '../middleware/authMiddleware.js';
+import { chatWithGemini, analyzeComplexity } from '../utils/gemini.js';
+
 const router = express.Router();
-const { protect } = require('../middleware/authMiddleware');
-const { chatWithGemini, analyzeComplexity } = require('../utils/gemini');
 
 router.post('/chat', protect, async (req, res) => {
   const { prompt } = req.body;
@@ -14,12 +15,8 @@ router.post('/chat', protect, async (req, res) => {
     if (error.status === 429) {
       details = 'AI Quota exceeded. Please try again later or check your API key billing.';
     } else if (error.message) {
-      try {
-        const parsed = JSON.parse(error.message);
-        details = parsed.error?.message || error.message;
-      } catch (e) {
-        details = error.message;
-      }
+      try { const parsed = JSON.parse(error.message); details = parsed.error?.message || error.message; }
+      catch (e) { details = error.message; }
     }
     console.error('FULL GEMINI ERROR:', error);
     res.status(error.status === 429 ? 429 : 500).json({ error: 'Gemini chat failed.', details });
@@ -35,4 +32,4 @@ router.post('/analyze-complexity', protect, async (req, res) => {
   res.json(result);
 });
 
-module.exports = router;
+export default router;

@@ -1,9 +1,9 @@
-const express = require('express');
-const router = express.Router();
-const { getTerminalHistory, postTerminalMessage } = require('../controllers/terminalController');
-const { protect } = require('../middleware/authMiddleware');
+import express from 'express';
+import { getTerminalHistory, postTerminalMessage } from '../controllers/terminalController.js';
+import { protect } from '../middleware/authMiddleware.js';
 
+const router = express.Router();
 router.get('/history', protect, getTerminalHistory);
 router.post('/message', protect, postTerminalMessage);
 
-module.exports = router;
+export default router;

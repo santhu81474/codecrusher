@@ -1,15 +1,10 @@
-const express = require('express');
+import express from 'express';
+import { runMatchmaker, explainCode, generateSprintPlan } from '../controllers/aiController.js';
+import { protect } from '../middleware/authMiddleware.js';
+
 const router = express.Router();
-const { protect } = require('../middleware/authMiddleware');
-const aiController = require('../controllers/aiController');
+router.post('/matchmaker', protect, runMatchmaker);
+router.post('/explain', protect, explainCode);
+router.post('/sprint-plan', protect, generateSprintPlan);
 
-// AI Matchmaker
-router.post('/matchmaker', protect, aiController.runMatchmaker);
-
-// AI Code Explainer
-router.post('/explain', protect, aiController.explainCode);
-
-// AI Sprint Planner
-router.post('/sprint-plan', protect, aiController.generateSprintPlan);
-
-module.exports = router;
+export default router;

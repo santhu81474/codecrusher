@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const submissionSchema = new mongoose.Schema({
   challengeId: { type: mongoose.Schema.Types.ObjectId, ref: 'Challenge', required: true },
@@ -6,9 +6,9 @@ const submissionSchema = new mongoose.Schema({
   code: { type: String, required: true },
   language: { type: String, required: true },
   status: { type: String, enum: ['Accepted', 'Wrong Answer', 'Memory Limit Exceeded', 'Time Limit Exceeded'], default: 'Accepted' },
-  executionTime: { type: Number }, // in ms
-  memoryUsage: { type: Number }, // in KB
+  executionTime: { type: Number },
+  memoryUsage: { type: Number },
   pointsEarned: { type: Number, default: 0 }
 }, { timestamps: true });
 
-module.exports = mongoose.model('Submission', submissionSchema);
+export default mongoose.model('Submission', submissionSchema);

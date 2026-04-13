@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const testSchema = new mongoose.Schema({
   questions: [{
@@ -8,4 +8,4 @@ const testSchema = new mongoose.Schema({
   correctAnswers: { type: [String], required: true }
 }, { timestamps: true });
 
-module.exports = mongoose.model('Test', testSchema);
+export default mongoose.model('Test', testSchema);

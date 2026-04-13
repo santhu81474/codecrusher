@@ -1,115 +1,63 @@
-const Challenge = require('../models/Challenge');
-const Submission = require('../models/Submission');
-const User = require('../models/User');
-const { generateChallenge, validateSubmission, generateAdaptiveChallenge } = require('../utils/gemini');
+import Challenge from '../models/Challenge.js';
+import Submission from '../models/Submission.js';
+import User from '../models/User.js';
+import { generateChallenge, validateSubmission, generateAdaptiveChallenge } from '../utils/gemini.js';
 
-const getDailyChallenge = async (req, res, next) => {
+export const getDailyChallenge = async (req, res, next) => {
   try {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    
     let challenge = await Challenge.findOne({ activeDate: { $gte: today } });
-    
     if (!challenge) {
-      // Use Gemini to generate a fresh challenge
       const aiChallenge = await generateChallenge();
       if (aiChallenge) {
-        challenge = await Challenge.create({
-          ...aiChallenge,
-          activeDate: today
-        });
+        challenge = await Challenge.create({ ...aiChallenge, activeDate: today });
       } else {
-        // Fallback to default
         challenge = await Challenge.create({
           title: "The Reverse Array Protocol",
           problemStatement: "Implement a function `reverseArray(arr)` that reverses the given array in-place with O(1) extra space.",
-          difficulty: "Easy",
-          points: 50,
+          difficulty: "Easy", points: 50,
           testCases: [{ input: "[1,2,3]", output: "[3,2,1]" }],
           activeDate: today
         });
       }
     }
-    
     res.json(challenge);
-  } catch (error) {
-    next(error);
-  }
+  } catch (error) { next(error); }
 };
 
-const submitSolution = async (req, res, next) => {
+export const submitSolution = async (req, res, next) => {
   try {
     const { challengeId, code, language } = req.body;
-    
     const challenge = await Challenge.findById(challengeId);
     if (!challenge) return res.status(404).json({ message: 'Challenge not found' });
-
-    // Use Gemini for strict logic validation
     const result = await validateSubmission(challenge, language, code);
-    
     const status = result.isCorrect ? 'Accepted' : 'Wrong Answer';
     const pointsEarned = result.isCorrect ? challenge.points : 0;
-
     const submission = await Submission.create({
-      challengeId,
-      userId: req.user.id,
-      code,
-      language,
-      status,
+      challengeId, userId: req.user.id, code, language, status,
       executionTime: result.executionTimeEstimate || 0,
-      memoryUsage: result.memoryUsageEstimate || 0,
-      pointsEarned
+      memoryUsage: result.memoryUsageEstimate || 0, pointsEarned
     });
-
     if (result.isCorrect) {
-      // Update user stats
-      await User.findByIdAndUpdate(req.user.id, { 
-        $inc: { 
-          points: pointsEarned,
-          arenaXP: pointsEarned,
-          challengesSolved: 1
-        } 
-      });
+      await User.findByIdAndUpdate(req.user.id, { $inc: { points: pointsEarned, arenaXP: pointsEarned, challengesSolved: 1 } });
     }
-
-    res.status(result.isCorrect ? 201 : 200).json({ 
+    res.status(result.isCorrect ? 201 : 200).json({
       message: result.isCorrect ? 'Transmission Successful. Algorithm Verified.' : 'CRITICAL_ERROR: Logic Mismatch Detected.',
-      feedback: result.feedback,
-      submission,
-      pointsEarned 
+      feedback: result.feedback, submission, pointsEarned
     });
-  } catch (error) {
-    next(error);
-  }
+  } catch (error) { next(error); }
 };
 
-const getAdaptiveChallenge = async (req, res, next) => {
+export const getAdaptiveChallenge = async (req, res, next) => {
   try {
     const user = await User.findById(req.user.id).select('skills rating challengesSolved');
-    const recentSubmissions = await Submission.find({ userId: req.user.id })
-                                              .sort({ createdAt: -1 })
-                                              .limit(5)
-                                              .select('status language feedback pointsEarned createdAt');
-    
+    const recentSubmissions = await Submission.find({ userId: req.user.id }).sort({ createdAt: -1 }).limit(5).select('status language feedback pointsEarned createdAt');
     const userProfileStr = JSON.stringify(user, null, 2);
     const historyStr = JSON.stringify(recentSubmissions.length > 0 ? recentSubmissions : "No history. User is completely new.", null, 2);
-
     const aiChallenge = await generateAdaptiveChallenge(userProfileStr, historyStr);
-    
-    if (!aiChallenge) {
-      return res.status(500).json({ message: "DAAO AI Core overloaded. Try again." });
-    }
-
-    const challenge = await Challenge.create({
-      ...aiChallenge,
-      targetUserId: req.user.id,
-      activeDate: new Date()
-    });
-
+    if (!aiChallenge) return res.status(500).json({ message: "DAAO AI Core overloaded. Try again." });
+    const challenge = await Challenge.create({ ...aiChallenge, targetUserId: req.user.id, activeDate: new Date() });
     res.json(challenge);
-  } catch (error) {
-    next(error);
-  }
+  } catch (error) { next(error); }
 };
-
-module.exports = { getDailyChallenge, submitSolution, getAdaptiveChallenge };

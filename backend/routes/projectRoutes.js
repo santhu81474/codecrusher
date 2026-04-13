@@ -1,13 +1,11 @@
-const express = require('express');
+import express from 'express';
+import { createProject, getProjects, getProjectById, applyToProject, getUserApplications, deleteProject, addTask, updateTask, deleteTask } from '../controllers/projectController.js';
+import { protect } from '../middleware/authMiddleware.js';
+import Message from '../models/Message.js';
+
 const router = express.Router();
-const { createProject, getProjects, getProjectById, applyToProject, getUserApplications, deleteProject, addTask, updateTask, deleteTask } = require('../controllers/projectController');
-const { protect } = require('../middleware/authMiddleware');
-const Message = require('../models/Message');
 
-router.route('/')
-  .get(getProjects)
-  .post(protect, createProject);
-
+router.route('/').get(getProjects).post(protect, createProject);
 router.get('/my-applications', protect, getUserApplications);
 router.get('/:id', protect, getProjectById);
 router.post('/:projectId/apply', protect, applyToProject);
@@ -25,9 +23,7 @@ router.get('/:projectId/messages', protect, async (req, res, next) => {
       .populate('senderId', 'name')
       .sort({ timestamp: 1 });
     res.json(messages);
-  } catch (error) {
-    next(error);
-  }
+  } catch (error) { next(error); }
 });
 
-module.exports = router;
+export default router;

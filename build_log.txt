@@ -35,7 +35,7 @@ dist/assets/chunk-QFMPRPBF-B5KorBS6.js    41.32 kB Γöé gzip:  14.62 kB
 dist/assets/index-HBRAFSAo.js            194.43 kB Γöé gzip:  61.05 kB
 dist/assets/Profile-tkKY0XvR.js          532.69 kB Γöé gzip: 143.96 kB
 
-[32mΓ£ô built in 349ms[39m
+[32mΓ£ô built in 368ms[39m
 node.exe : [33m[plugin 
 builtin:vite-reporter] 
 At line:1 char:1

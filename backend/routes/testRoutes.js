@@ -1,8 +1,8 @@
-const express = require('express');
-const router = express.Router();
-const { submitTest } = require('../controllers/testController');
-const { protect } = require('../middleware/authMiddleware');
+import express from 'express';
+import { submitTest } from '../controllers/testController.js';
+import { protect } from '../middleware/authMiddleware.js';
 
+const router = express.Router();
 router.post('/submit', protect, submitTest);
 
-module.exports = router;
+export default router;

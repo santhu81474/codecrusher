@@ -1,7 +1,7 @@
-const express = require('express');
-const router = express.Router();
-const { getLeaderboard } = require('../controllers/leaderboardController');
+import express from 'express';
+import { getLeaderboard } from '../controllers/leaderboardController.js';
 
+const router = express.Router();
 router.get('/', getLeaderboard);
 
-module.exports = router;
+export default router;

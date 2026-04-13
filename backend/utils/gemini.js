@@ -1,63 +1,26 @@
-const { GoogleGenAI } = require("@google/genai");
+import { GoogleGenAI } from "@google/genai";
 
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY,
-});
-
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 const MODEL = "gemini-2.5-flash";
 
-/**
- * Generates a new coding challenge
- */
-const generateChallenge = async () => {
-  const prompt = `Generate a coding challenge for a "Hacker/Cyberpunk" themed platform.
-Return ONLY valid JSON with:
-title, problemStatement, difficulty, points, category, testCases`;
-
+export const generateChallenge = async () => {
+  const prompt = `Generate a coding challenge for a "Hacker/Cyberpunk" themed platform.\nReturn ONLY valid JSON with:\ntitle, problemStatement, difficulty, points, category, testCases`;
   try {
-    const res = await ai.models.generateContent({
-      model: MODEL,
-      contents: prompt,
-    });
-
-    const text = res.text;
-    return JSON.parse(text);
+    const res = await ai.models.generateContent({ model: MODEL, contents: prompt });
+    return JSON.parse(res.text);
   } catch (err) {
     console.error("Gemini Generation Error:", err);
     return null;
   }
 };
 
-/**
- * Validates submission
- */
-const validateSubmission = async (challenge, lang, code) => {
+export const validateSubmission = async (challenge, lang, code) => {
   if (!code || code.trim().length < 5) {
     return { isCorrect: false, feedback: "CODE_TOO_SMALL" };
   }
-
-  const prompt = `
-Challenge: ${challenge.title}
-${challenge.problemStatement}
-
-Language: ${lang}
-Code:
-${code}
-
-Return ONLY JSON:
-{
-  "isCorrect": boolean,
-  "feedback": "short",
-  "executionTimeEstimate": number,
-  "memoryUsageEstimate": number
-}`;
-
+  const prompt = `Challenge: ${challenge.title}\n${challenge.problemStatement}\n\nLanguage: ${lang}\nCode:\n${code}\n\nReturn ONLY JSON:\n{\n  "isCorrect": boolean,\n  "feedback": "short",\n  "executionTimeEstimate": number,\n  "memoryUsageEstimate": number\n}`;
   try {
-    const res = await ai.models.generateContent({
-      model: MODEL,
-      contents: prompt,
-    });
-
+    const res = await ai.models.generateContent({ model: MODEL, contents: prompt });
     return JSON.parse(res.text);
   } catch (err) {
     console.error("Gemini Validation Error:", err);
@@ -65,10 +28,7 @@ Return ONLY JSON:
   }
 };
 
-/**
- * Chat
- */
-const chatWithGemini = async (prompt) => {
+export const chatWithGemini = async (prompt) => {
   const systemContext = `You are a helpful AI Assistant integrated into CodeCrusher.
 CodeCrusher is a coding and collaboration platform where developers can team up, tackle challenges, and build projects.
 Features on the Navigation Bar include:
@@ -85,13 +45,8 @@ Features on the Navigation Bar include:
 Always respond naturally and professionally as a knowledgeable senior software engineer and mentor. Do not use overly robotic, hacker, or cyberpunk themes. Be concise, technical, and helpful.
 
 User query: ${prompt}`;
-
   try {
-    const res = await ai.models.generateContent({
-      model: MODEL,
-      contents: systemContext,
-    });
-
+    const res = await ai.models.generateContent({ model: MODEL, contents: systemContext });
     return res.text || "No response";
   } catch (err) {
     console.error("Gemini Chat Error:", err);
@@ -99,10 +54,7 @@ User query: ${prompt}`;
   }
 };
 
-/**
- * ReAct AI Matchmaker
- */
-const agenticMatchmaker = async (projectContext, usersData) => {
+export const agenticMatchmaker = async (projectContext, usersData) => {
   const prompt = `You are a Team Matchmaker Agent.
 Analyze the talent pool and select the top 3 best fits for this project requirement.
 
@@ -130,21 +82,14 @@ ${usersData}
 }
 
 DO NOT wrap the response in markdown blocks like \`\`\`json. Return strictly the raw JSON text.`;
-
   try {
-    const res = await ai.models.generateContent({
-      model: MODEL,
-      contents: prompt,
-    });
-    
-    // Attempt to parse out any accidental markdown
+    const res = await ai.models.generateContent({ model: MODEL, contents: prompt });
     let rawText = res.text.trim();
     if (rawText.startsWith('\`\`\`json')) {
       rawText = rawText.replace(/^\`\`\`json/, '').replace(/\`\`\`$/, '').trim();
     } else if (rawText.startsWith('\`\`\`')) {
       rawText = rawText.replace(/^\`\`\`/, '').replace(/\`\`\`$/, '').trim();
     }
-    
     return JSON.parse(rawText);
   } catch (err) {
     console.error("Matchmaker Agent Error:", err);
@@ -152,10 +97,7 @@ DO NOT wrap the response in markdown blocks like \`\`\`json. Return strictly the
   }
 };
 
-/**
- * Adaptive DAAO Challenge Generator
- */
-const generateAdaptiveChallenge = async (userProfileStr, historyStr) => {
+export const generateAdaptiveChallenge = async (userProfileStr, historyStr) => {
   const prompt = `You are the Dynamic Adaptive Arena Optimizer (DAAO).
 Your objective is to generate an algorithmic coding challenge specifically designed to improve a user's skills based on their profile and past performance.
 
@@ -166,13 +108,13 @@ ${userProfileStr}
 ${historyStr}
 
 **Instructions:**
-1. Analyze the user's history. Identify what concepts they failed at (e.g., memory leaks, logic mismatch in graphs/trees, arrays).
+1. Analyze the user's history. Identify what concepts they failed at.
 2. Generate a new challenge tailored to train that specific weakness.
-3. If they are succeeding easily, ramp up the difficulty exponentially. If failing repeatedly, step down the difficulty slightly to re-teach core concepts.
+3. If they are succeeding easily, ramp up the difficulty. If failing repeatedly, step down slightly.
 4. Scale "points" dynamically. Harder problems = more points (100 - 500).
 5. Output MUST be strictly valid JSON matching this schema exactly:
 {
-  "title": "String (cyberpunk themed)",
+  "title": "String",
   "problemStatement": "String (Markdown format allowed)",
   "difficulty": "Easy" | "Medium" | "Hard",
   "points": number,
@@ -180,21 +122,15 @@ ${historyStr}
   "testCases": [{"input": "string", "output": "string"}]
 }
 
-Return ONLY raw JSON without markdown \`\`\` wrappers.`;
-
+Return ONLY raw JSON without markdown wrappers.`;
   try {
-    const res = await ai.models.generateContent({
-      model: MODEL,
-      contents: prompt,
-    });
-    
+    const res = await ai.models.generateContent({ model: MODEL, contents: prompt });
     let rawText = res.text.trim();
     if (rawText.startsWith('\`\`\`json')) {
       rawText = rawText.replace(/^\`\`\`json/, '').replace(/\`\`\`$/, '').trim();
     } else if (rawText.startsWith('\`\`\`')) {
       rawText = rawText.replace(/^\`\`\`/, '').replace(/\`\`\`$/, '').trim();
     }
-    
     return JSON.parse(rawText);
   } catch (err) {
     console.error("Adaptive Generation Error:", err);
@@ -202,38 +138,19 @@ Return ONLY raw JSON without markdown \`\`\` wrappers.`;
   }
 };
 
-/**
- * Analyze Live Complexity
- */
-const analyzeComplexity = async (code) => {
-  const prompt = `Analyze the following code and return ONLY a JSON response indicating the time and space complexity in Big O notation.
-Code:
-${code}
-
-Return strictly this JSON schema:
-{
-  "time": "O(N)",
-  "space": "O(1)"
-}`;
-
+export const analyzeComplexity = async (code) => {
+  const prompt = `Analyze the following code and return ONLY a JSON response indicating the time and space complexity in Big O notation.\nCode:\n${code}\n\nReturn strictly this JSON schema:\n{\n  "time": "O(N)",\n  "space": "O(1)"\n}`;
   try {
-    const res = await ai.models.generateContent({
-      model: MODEL,
-      contents: prompt,
-    });
-    
+    const res = await ai.models.generateContent({ model: MODEL, contents: prompt });
     let rawText = res.text.trim();
     if (rawText.startsWith('\`\`\`json')) {
       rawText = rawText.replace(/^\`\`\`json/, '').replace(/\`\`\`$/, '').trim();
     } else if (rawText.startsWith('\`\`\`')) {
       rawText = rawText.replace(/^\`\`\`/, '').replace(/\`\`\`$/, '').trim();
     }
-    
     return JSON.parse(rawText);
   } catch (err) {
     console.error("Complexity AI Error:", err);
     return { time: "O(?)", space: "O(?)" };
   }
 };
-
-module.exports = { generateChallenge, validateSubmission, chatWithGemini, agenticMatchmaker, generateAdaptiveChallenge, analyzeComplexity };

@@ -1,10 +1,10 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const challengeRoomSchema = new mongoose.Schema({
   creator: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   participants: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   status: { type: String, enum: ['waiting', 'active', 'completed'], default: 'waiting' },
-  problem: { type: mongoose.Schema.Types.Mixed }, // Challenge problem data
+  problem: { type: mongoose.Schema.Types.Mixed },
   roomCode: { type: String, required: true, unique: true },
   startTime: { type: Date },
   endTime: { type: Date },
@@ -16,4 +16,4 @@ const challengeRoomSchema = new mongoose.Schema({
   }]
 }, { timestamps: true });
 
-module.exports = mongoose.model('ChallengeRoom', challengeRoomSchema);
+export default mongoose.model('ChallengeRoom', challengeRoomSchema);

@@ -1,25 +1,23 @@
-const express = require('express');
-const router = express.Router();
-const { protect } = require('../middleware/authMiddleware');
+import express from 'express';
+import { protect } from '../middleware/authMiddleware.js';
 
-// CodeCast sessions are managed via Socket.io in server.js
-// These REST endpoints handle session metadata
+const router = express.Router();
 
 router.post('/start', protect, async (req, res) => {
   try {
-    const roomId = `cast_${req.user.id}_${Date.now()}`;
-    res.json({ roomId, message: 'CodeCast session started' });
+    const roomId = Math.random().toString(36).substring(2, 8).toUpperCase();
+    res.json({ roomId, message: 'CodeCast room created' });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to start CodeCast session' });
+    res.status(500).json({ error: 'Failed to start CodeCast' });
   }
 });
 
 router.post('/stop', protect, async (req, res) => {
   try {
-    res.json({ message: 'CodeCast session stopped' });
+    res.json({ message: 'CodeCast stopped' });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to stop CodeCast session' });
+    res.status(500).json({ error: 'Failed to stop CodeCast' });
   }
 });
 
-module.exports = router;
+export default router;

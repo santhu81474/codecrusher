@@ -1,9 +1,8 @@
-const express = require('express');
-const router = express.Router();
-const { protect } = require('../middleware/authMiddleware');
-const { queryCodebase } = require('../controllers/ragController');
+import express from 'express';
+import { protect } from '../middleware/authMiddleware.js';
+import { queryCodebase } from '../controllers/ragController.js';
 
-// POST /api/rag/query — RAG-grounded codebase Q&A
+const router = express.Router();
 router.post('/query', protect, queryCodebase);
 
-module.exports = router;
+export default router;
