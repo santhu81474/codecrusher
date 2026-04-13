@@ -3,81 +3,72 @@
 transforming...Γ£ô 139 modules transformed.
 rendering chunks...
 computing gzip size...
-dist/index.html                            0.85 kB Γöé gzip:   0.40 kB
-dist/assets/index-MtCdyHJP.css            16.52 kB Γöé gzip:   4.12 kB
-dist/assets/Skeleton-CD6lZ5BR.js           0.23 kB Γöé gzip:   0.20 kB
-dist/assets/AuthContext-42SQ831n.js        1.50 kB Γöé gzip:   0.73 kB
-dist/assets/Reviews-B1oX7h75.js            1.56 kB Γöé gzip:   0.82 kB
-dist/assets/Applications-CpGnpFpH.js       2.73 kB Γöé gzip:   1.16 kB
-dist/assets/SkillTest-OJqe0WZq.js          3.01 kB Γöé gzip:   1.33 kB
-dist/assets/GeminiChat-CmpUZJc5.js         3.04 kB Γöé gzip:   1.37 kB
-dist/assets/Login-Ba98juqW.js              3.21 kB Γöé gzip:   1.27 kB
-dist/assets/Bounties-BsBbLkt0.js           3.33 kB Γöé gzip:   1.33 kB
-dist/assets/Leaderboard-C-F1n-Mv.js        3.70 kB Γöé gzip:   1.46 kB
-dist/assets/Signup-CVR8nitC.js             3.82 kB Γöé gzip:   1.28 kB
-dist/assets/Matchmaker-CUq2C4Hs.js         5.05 kB Γöé gzip:   1.77 kB
-dist/assets/Forge-BGYkFPtR.js              5.21 kB Γöé gzip:   1.77 kB
-dist/assets/TerminalChat-CjlkKcOv.js       5.81 kB Γöé gzip:   2.19 kB
-dist/assets/AIExplainer-mbtmcoKy.js        5.94 kB Γöé gzip:   2.16 kB
-dist/assets/CodeCast-Ctt9sTTN.js           7.45 kB Γöé gzip:   2.38 kB
-dist/assets/CreateProject-C9ZNGUg7.js      8.18 kB Γöé gzip:   2.33 kB
-dist/assets/Network-o1iR1LCW.js            8.27 kB Γöé gzip:   2.55 kB
-dist/assets/ChallengeRooms-D05AGwLG.js     8.27 kB Γöé gzip:   2.55 kB
-dist/assets/SprintBoard-DJvfPcws.js        8.28 kB Γöé gzip:   2.58 kB
-dist/assets/jsx-runtime-DWSWI4JT.js        8.52 kB Γöé gzip:   3.25 kB
-dist/assets/dist-BiIhOnSa.js              11.88 kB Γöé gzip:   4.72 kB
-dist/assets/Dashboard-DaQinpwq.js         14.27 kB Γöé gzip:   3.67 kB
-dist/assets/ExploreProjects-x4g9nNkI.js   19.07 kB Γöé gzip:   5.71 kB
-dist/assets/Arena-BNw5cCNG.js             25.86 kB Γöé gzip:   7.39 kB
-dist/assets/api-cSUrBlK4.js               38.25 kB Γöé gzip:  15.14 kB
-dist/assets/esm-DA_6fLEi.js               41.16 kB Γöé gzip:  12.84 kB
-dist/assets/chunk-QFMPRPBF-B5KorBS6.js    41.32 kB Γöé gzip:  14.62 kB
-dist/assets/index-HBRAFSAo.js            194.43 kB Γöé gzip:  61.05 kB
-dist/assets/Profile-tkKY0XvR.js          532.69 kB Γöé gzip: 143.96 kB
+dist/index.html                             1.02 kB Γöé gzip:   0.43 kB
+dist/assets/index-MtCdyHJP.css             16.52 kB Γöé gzip:   4.12 kB
+dist/assets/Skeleton-DqXMBRTF.js            0.31 kB Γöé gzip:   0.24 kB
+dist/assets/rolldown-runtime-Dw2cE7zH.js    0.68 kB Γöé gzip:   0.41 kB
+dist/assets/AuthContext-CXldbU-c.js         1.58 kB Γöé gzip:   0.77 kB
+dist/assets/Reviews-CXe4m2li.js             1.64 kB Γöé gzip:   0.86 kB
+dist/assets/Applications-BXoBV9Q4.js        2.81 kB Γöé gzip:   1.19 kB
+dist/assets/SkillTest-DbCfg5XG.js           3.09 kB Γöé gzip:   1.37 kB
+dist/assets/GeminiChat-BqOK8hLM.js          3.13 kB Γöé gzip:   1.41 kB
+dist/assets/Login-DpC0ylOf.js               3.30 kB Γöé gzip:   1.31 kB
+dist/assets/Bounties-BuTwA_lO.js            3.42 kB Γöé gzip:   1.37 kB
+dist/assets/Leaderboard-Dvo9wgn_.js         3.78 kB Γöé gzip:   1.50 kB
+dist/assets/Signup-brYyyb1V.js              3.90 kB Γöé gzip:   1.32 kB
+dist/assets/Matchmaker-Cm38YiIN.js          5.14 kB Γöé gzip:   1.81 kB
+dist/assets/Forge-DMzJYoO3.js               5.29 kB Γöé gzip:   1.81 kB
+dist/assets/TerminalChat-Cl3cAn3x.js        5.89 kB Γöé gzip:   2.23 kB
+dist/assets/AIExplainer-BYTkGjHU.js         6.03 kB Γöé gzip:   2.20 kB
+dist/assets/CodeCast-DuOIpcRT.js            7.55 kB Γöé gzip:   2.42 kB
+dist/assets/CreateProject-DNzJ4oLR.js       8.26 kB Γöé gzip:   2.37 kB
+dist/assets/Network-DSW0foG4.js             8.36 kB Γöé gzip:   2.59 kB
+dist/assets/SprintBoard-bN3WCiis.js         8.37 kB Γöé gzip:   2.62 kB
+dist/assets/ChallengeRooms-Bezl9iXQ.js      8.37 kB Γöé gzip:   2.59 kB
+dist/assets/dist-CVo5DBAn.js               11.92 kB Γöé gzip:   4.75 kB
+dist/assets/index-BXE6_eQy.js              12.94 kB Γöé gzip:   3.89 kB
+dist/assets/Dashboard-DGRTCCh6.js          14.35 kB Γöé gzip:   3.71 kB
+dist/assets/Profile-BgMrUvke.js            17.45 kB Γöé gzip:   5.53 kB
+dist/assets/ExploreProjects-BTMYWhC3.js    19.15 kB Γöé gzip:   5.75 kB
+dist/assets/Arena-SXwMpxVB.js              25.95 kB Γöé gzip:   7.43 kB
+dist/assets/api-DptFViEJ.js                38.26 kB Γöé gzip:  15.14 kB
+dist/assets/socket-vendor-qkvrVQyD.js      41.16 kB Γöé gzip:  12.85 kB
+dist/assets/chunk-QFMPRPBF-BNGK9GyQ.js     41.36 kB Γöé gzip:  14.64 kB
+dist/assets/react-vendor-SfzWmvSX.js      182.16 kB Γöé gzip:  57.34 kB
+dist/assets/charts-vendor-BMoYA3Py.js     522.79 kB Γöé gzip: 141.01 kB
 
-[32mΓ£ô built in 353ms[39m
-node.exe : 
-[33m[plugin builtin:v
-ite-reporter] 
+[32mΓ£ô built in 361ms[39m
+node.exe : [33m[plugin 
+builtin:vite-reporter] 
 At line:1 char:1
-+ & "C:\Program Files\
-nodejs/node.exe" 
++ & "C:\Program 
+Files\nodejs/node.exe" 
 "C:\Program 
-Files\nodejs/node_mo 
-...
-+ ~~~~~~~~~~~~~~~~~~~~
-~~~~~~~~~~~~~~~~~~~~~~
-~~~~~~~~~~~~~~~~~~~~~~
-~~~~~
-    + CategoryInfo    
-          : 
-NotSpecified: (    
-[33m[plugin builtin:v 
-   ite-reporter] 
-:String    ) [], 
-RemoteException
-    + 
-FullyQualifiedError   
- Id : 
-NativeCommandErr    or
+Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo        
+      : NotSpecified: (  
+  [33m[plugin builtin:v   
+ ite-reporter] :String    
+) [], RemoteException
+    + FullyQualifiedError 
+   Id : NativeCommandErr  
+  or
  
 (!) Some chunks are 
-larger than 500 kB 
-after minification. 
-Consider:
-- Using dynamic 
-import() to 
-code-split the 
+larger than 500 kB after 
+minification. Consider:
+- Using dynamic import() 
+to code-split the 
 application
-- Use build.rolldownOp
-tions.output.codeSplit
-ting to improve 
-chunking: https://roll
-down.rs/reference/Outp
-utOptions.codeSplittin
-g
-- Adjust chunk size 
-limit for this 
-warning via build.chun
-kSizeWarningLimit.[39
-m
+- Use build.rolldownOption
+s.output.codeSplitting to 
+improve chunking: https://
+rolldown.rs/reference/Outp
+utOptions.codeSplitting
+- Adjust chunk size limit 
+for this warning via build
+.chunkSizeWarningLimit.[3
+9m
