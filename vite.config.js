@@ -24,11 +24,6 @@ export default defineConfig({
     rollupOptions: {
       output: {
         // ✅ Force correct function format (overrides plugin issues)
-        manualChunks(id) {
-          if (id.includes('node_modules')) {
-            return 'vendor'
-          }
-        }
       }
     }
   }
