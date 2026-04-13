@@ -103,38 +103,33 @@ User query: ${prompt}`;
  * ReAct AI Matchmaker
  */
 const agenticMatchmaker = async (projectContext, usersData) => {
-  const prompt = `You are an AI Team Matchmaker Agent.
-Your task is to analyze a pool of developers and select the top 3 best fits for a given project using a ReAct (Reasoning and Acting) framework.
+  const prompt = `You are a Team Matchmaker Agent.
+Analyze the talent pool and select the top 3 best fits for this project requirement.
 
-**Project Requirements:**
+**Requirements:**
 ${projectContext}
 
-**Available Talent Pool (JSON):**
+**Talent Pool:**
 ${usersData}
 
 **Instructions:**
-1. Read the Project Requirements carefully.
-2. Analyze the Talent Pool. Look at their skills, rating, and platform activity (challenges/projects solved).
-3. Select exactly 3 developers who, together, form a balanced team capable of completing the project.
-4. Output your entire reasoning process. You MUST format your response strictly as JSON with this schema:
+1. Select exactly 3 developers who fit the requirements.
+2. Return ONLY a valid JSON string matching this schema EXACTLY:
 {
   "logs": [
-    "Thought: I need to find developers with...",
-    "Action: Scanning pool for React experts...",
-    "Observation: User X has React and a high rating but no backend experience.",
-    "Thought: I should balance User X with a backend dev...",
-    "Final Decision: Selecting Users X, Y, Z."
+    "Brief analysis log 1...",
+    "Brief analysis log 2..."
   ],
   "matches": [
     {
       "userId": "MongoDB _id string",
       "name": "User Name",
-      "reasoning": "Brief explanation of why this specific user was chosen."
+      "reasoning": "Brief reason"
     }
   ]
 }
 
-Return ONLY the raw JSON string without any markdown formatting like \`\`\`json.`;
+DO NOT wrap the response in markdown blocks like \`\`\`json. Return strictly the raw JSON text.`;
 
   try {
     const res = await ai.models.generateContent({

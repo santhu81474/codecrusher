@@ -11,7 +11,9 @@ const userSchema = new mongoose.Schema({
   githubUrl: { type: String, default: '' },
   linkedinUrl: { type: String, default: '' },
   challengesSolved: { type: Number, default: 0 },
-  arenaXP: { type: Number, default: 0 }
+  arenaXP: { type: Number, default: 0 },
+  connections: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import SkillBadges from '../components/SkillBadges';
 import ScoreRing from '../components/ScoreRing';
 import Chart from 'react-apexcharts';
-import { updateProfile, fetchProjects, fetchUserApplications } from '../services/api';
+import { updateProfile, fetchProjects, fetchUserApplications, getSnippets, deleteProject } from '../services/api';
 
 const Profile = () => {
     // Tab constants for Project Terminal
@@ -21,6 +21,7 @@ const Profile = () => {
   const [ownedProjects, setOwnedProjects] = useState([]);
   const [applications, setApplications] = useState([]);
   const [activity, setActivity] = useState([]);
+  const [snippetCount, setSnippetCount] = useState(0);
   const [loadingActivity, setLoadingActivity] = useState(true);
   
   // Mocking profile extra details (used as fallback only)
@@ -33,6 +34,9 @@ const Profile = () => {
     ]
   };
 
+  const chartCategories = user?.skills?.length ? user.skills.slice(0, 5) : ['Frontend', 'Backend', 'DevOps', 'DSA', 'System Design'];
+  const chartData = chartCategories.map((_, i) => [80, 70, 95, 90, 60][i % 5]);
+
   useEffect(() => {
     const load = async () => {
       if (!user?.id) {
@@ -40,9 +44,10 @@ const Profile = () => {
         return;
       }
       try {
-        const [projectsRes, appsRes] = await Promise.all([
+        const [projectsRes, appsRes, snippetsRes] = await Promise.all([
           fetchProjects(),
-          fetchUserApplications()
+          fetchUserApplications(),
+          getSnippets()
         ]);
         const allProjects = projectsRes.data || [];
         const myOwned = allProjects.filter(p => p.ownerId?._id === user.id);
@@ -50,6 +55,9 @@ const Profile = () => {
 
         const apps = appsRes.data || [];
         setApplications(apps);
+        
+        const snippets = snippetsRes.data || [];
+        setSnippetCount(snippets.filter(s => s.authorId?._id === user.id).length);
 
         const monthMap = new Map();
 
@@ -100,6 +108,17 @@ const Profile = () => {
     } finally {
       setSavingSocial(false);
       setTimeout(() => setSocialMessage(''), 3000);
+    }
+  };
+
+  const handleDeleteProject = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this project node?')) return;
+    try {
+      await deleteProject(id);
+      setOwnedProjects(prev => prev.filter(p => p._id !== id));
+    } catch (err) {
+      console.error('Failed to delete project', err);
+      // alert or toast error here
     }
   };
 
@@ -181,6 +200,10 @@ const Profile = () => {
               <div className="mono" style={{ fontSize: 18, color: '#F59E0B', fontWeight: 700 }}>{user?.challengesSolved || 0}</div>
               <div className="mono" style={{ fontSize: 10, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 1 }}>Arena_Solved</div>
             </div>
+            <div className="card neon-hover" style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div className="mono" style={{ fontSize: 18, color: 'var(--link-color)', fontWeight: 700 }}>{snippetCount}</div>
+              <div className="mono" style={{ fontSize: 10, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 1 }}>Forge_Snippets</div>
+            </div>
           </div>
 
           <Link to="/skill-test" className="btn btn-primary mono" style={{ width: '100%', marginTop: 24, fontSize: 12 }}>Run Skill Validation</Link>
@@ -215,23 +238,23 @@ const Profile = () => {
                   options={{
                     chart: { id: 'skill-radar', toolbar: { show: false }, background: 'transparent' },
                     xaxis: { 
-                      categories: ['Frontend', 'Backend', 'DevOps', 'DSA', 'System Design'], 
+                      categories: chartCategories, 
                       labels: { style: { colors: '#8b949e', fontSize: '10px', fontFamily: 'var(--font-mono)' } } 
                     },
-                    yaxis: { show: false },
+                    yaxis: { show: false, min: 0, max: 100 },
                     fill: { opacity: 0.2, colors: ['#2ecc71'] },
                     stroke: { show: true, width: 2, colors: ['#2ecc71'] },
                     markers: { size: 4, colors: ['#2ecc71'] },
                     grid: { show: false },
                     theme: { mode: 'dark' }
                   }}
-                  series={[{ name: 'Skill Level', data: [80, 70, 45, 90, 60] }]}
+                  series={[{ name: 'Skill Level', data: chartData }]}
                   type="radar"
                   height="220"
                 />
               </div>
               <div style={{ width: '130px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {(user?.skills || profileDetails.skills).slice(0, 5).map(skill => (
+                {chartCategories.map(skill => (
                   <div key={skill} className="badge mono" style={{ fontSize: 9, margin: 0, textAlign: 'center' }}>{skill}</div>
                 ))}
               </div>
@@ -300,7 +323,14 @@ const Profile = () => {
                   <div className="mono" style={{ color: 'var(--text-muted)', fontSize: 12, textAlign: 'center', padding: '40px' }}>No Local Assets Found</div>
                 ) : ownedProjects.map(p => (
                   <div key={p._id} className="card neon-hover" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px' }}>
-                    <div className="mono" style={{ color: 'var(--neon-green)', fontSize: 14 }}>{p.title}</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                      <button onClick={() => handleDeleteProject(p._id)} style={{ background: 'none', border: 'none', color: '#f85149', cursor: 'pointer' }} title="Delete Project">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                           <path d="M16 9v10H8V9h8m-1.5-6h-5l-1 1H5v2h14V4h-3.5l-1-1zM18 7H6v12c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7z"/>
+                        </svg>
+                      </button>
+                      <div className="mono" style={{ color: 'var(--neon-green)', fontSize: 14 }}>{p.title}</div>
+                    </div>
                     <div className="mono" style={{ fontSize: 10, color: 'var(--text-muted)' }}>{p.applicants?.length || 0} Peers Linked</div>
                   </div>
                 ))}

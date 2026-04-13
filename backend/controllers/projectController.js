@@ -109,4 +109,22 @@ const getUserApplications = async (req, res, next) => {
   }
 };
 
-module.exports = { createProject, getProjects, applyToProject, getUserApplications };
+const deleteProject = async (req, res, next) => {
+  try {
+    const project = await Project.findById(req.params.id);
+    if (!project) {
+      return res.status(404).json({ message: 'Project not found' });
+    }
+    
+    if (project.ownerId.toString() !== req.user.id) {
+      return res.status(401).json({ message: 'Not authorized to delete this project' });
+    }
+    
+    await project.deleteOne();
+    res.json({ message: 'Project removed' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { createProject, getProjects, applyToProject, getUserApplications, deleteProject };

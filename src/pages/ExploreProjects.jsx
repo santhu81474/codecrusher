@@ -29,6 +29,7 @@ const ExploreProjects = () => {
   const [search, setSearch] = useState('');
   const [skillFilter, setSkillFilter] = useState('');
   const [sortBy, setSortBy] = useState('newest');
+  const [selectedProject, setSelectedProject] = useState(null);
 
   useEffect(() => {
     const load = async () => {
@@ -177,13 +178,18 @@ const ExploreProjects = () => {
           const isFavorite = favorites.has(project._id);
           const hasApplied = (project.applicants || []).includes(user?.id);
           return (
-            <div key={project._id} className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <div 
+              key={project._id} 
+              className="card neon-hover" 
+              onClick={() => setSelectedProject(project)}
+              style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', cursor: 'pointer' }}
+            >
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
                   <h3 className="card-title" style={{ marginBottom: 0, fontSize: '1rem' }}>{project.title}</h3>
                   <button
                     type="button"
-                    onClick={() => toggleFavorite(project._id)}
+                    onClick={(e) => { e.stopPropagation(); toggleFavorite(project._id); }}
                     aria-label={isFavorite ? 'Remove from favorites' : 'Save to favorites'}
                     style={{
                       background: 'transparent',
@@ -260,6 +266,61 @@ const ExploreProjects = () => {
           </div>
         )}
       </div>
+
+      {/* Project Details Modal */}
+      {selectedProject && (
+        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px' }}>
+          <div className="card glass mono" style={{ width: '100%', maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto', position: 'relative' }}>
+            <button 
+              onClick={() => setSelectedProject(null)} 
+              style={{ position: 'absolute', top: '16px', right: '16px', background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '24px' }}
+            >
+              &times;
+            </button>
+            <h2 style={{ color: 'var(--neon-green)', marginTop: 0, marginBottom: '8px', fontSize: '24px' }}>{selectedProject.title}</h2>
+            <p style={{ color: 'var(--text-muted)', marginBottom: '16px' }}>by <span style={{ color: 'var(--link-color)' }}>{selectedProject.ownerId?.name || 'Unknown'}</span></p>
+            
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '20px' }}>
+              {selectedProject.roleType && <span className="badge">{selectedProject.roleType}</span>}
+              {selectedProject.seniority && <span className="badge">{selectedProject.seniority}</span>}
+              {selectedProject.workMode && <span className="badge">{selectedProject.workMode}</span>}
+              {selectedProject.duration && <span className="badge">{selectedProject.duration}</span>}
+              {selectedProject.openings > 0 && <span className="badge">{selectedProject.openings} opening{selectedProject.openings > 1 ? 's' : ''}</span>}
+            </div>
+
+            <div style={{ marginBottom: '20px' }}>
+              <h3 style={{ color: 'var(--text-main)', fontSize: '14px', marginBottom: '8px', textTransform: 'uppercase' }}>Description</h3>
+              <p style={{ lineHeight: 1.6, color: 'var(--text-muted)' }}>{selectedProject.description}</p>
+            </div>
+
+            <div style={{ marginBottom: '20px' }}>
+              <h3 style={{ color: 'var(--text-main)', fontSize: '14px', marginBottom: '8px', textTransform: 'uppercase' }}>Required Skills</h3>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                {(selectedProject.requiredSkills || []).map(skill => (
+                  <span key={skill} className="badge" style={{ backgroundColor: 'rgba(46, 160, 67, 0.1)', color: 'var(--neon-green)', border: '1px solid var(--neon-green)' }}>
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ color: 'var(--text-muted)' }}>
+                <strong>{selectedProject.applicants?.length || 0}</strong> applicants
+              </div>
+              <button 
+                className="btn btn-primary" 
+                onClick={() => {
+                  window.location.href = `/projects/${selectedProject._id}/apply`;
+                }}
+              >
+                Apply Now
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <RagWidget />
     </div>
   );

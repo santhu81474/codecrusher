@@ -64,6 +64,8 @@ app.use('/api/rag', require('./routes/ragRoutes'));
 // Global Error Handler
 app.use(errorHandler);
 
+const Message = require('./models/Message');
+
 io.on('connection', (socket) => {
   console.log('New user connected to Terminal Forge');
 
@@ -72,9 +74,33 @@ io.on('connection', (socket) => {
     console.log(`User joined project node: ${projectId}`);
   });
 
-  socket.on('send_message', (data) => {
-    // data: { projectId, sender, text }
-    io.to(data.projectId).emit('receive_message', data);
+  socket.on('send_message', async (data) => {
+    // data: { projectId, sender, text, senderId }
+    try {
+      if (data.projectId && data.senderId) {
+        const newMessage = await Message.create({
+          projectId: data.projectId,
+          senderId: data.senderId,
+          text: data.text
+        });
+        const savedMessage = await Message.findById(newMessage._id).populate('senderId', 'name');
+        
+        io.to(data.projectId).emit('receive_message', {
+          _id: savedMessage._id,
+          projectId: savedMessage.projectId,
+          sender: savedMessage.senderId.name,
+          text: savedMessage.text,
+          timestamp: savedMessage.timestamp
+        });
+      } else {
+        // Fallback for demo mode matching frontend without ID
+        io.to(data.projectId).emit('receive_message', data);
+      }
+    } catch (err) {
+      console.error('Error saving message:', err.message);
+      // Still emit to keep real-time flow even if DB fails
+      io.to(data.projectId).emit('receive_message', data);
+    }
   });
 
   socket.on('disconnect', () => {

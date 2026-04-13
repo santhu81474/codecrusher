@@ -2,8 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import io from 'socket.io-client';
 import { useAuth } from '../context/AuthContext';
+import api from '../services/api';
 
-const socket = io(import.meta.env.VITE_BACKEND_URL || 'http://localhost:5001');
+const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5001';
+// Keep one persistent connection per client
+const socket = io(backendUrl, { autoConnect: false });
 
 const TerminalChat = () => {
   const { id: projectId } = useParams();
@@ -14,15 +17,41 @@ const TerminalChat = () => {
   const chatEndRef = useRef(null);
 
   useEffect(() => {
-    socket.emit('join_project', projectId);
-
-    socket.on('receive_message', (data) => {
-      setMessages((prev) => [...prev, data]);
-    });
-
-    return () => {
-      socket.off('receive_message');
+    // Load chat history
+    const loadHistory = async () => {
+      try {
+        const { data } = await api.get(`/projects/${projectId}/messages`);
+        const formatted = data.map(m => ({
+          sender: m.senderId?.name || 'Unknown',
+          text: m.text,
+          timestamp: new Date(m.timestamp).toLocaleTimeString()
+        }));
+        setMessages(formatted);
+      } catch (err) {
+        console.error('Failed to load chat history:', err);
+      }
     };
+    
+    if (projectId) {
+      loadHistory();
+      socket.connect();
+      socket.emit('join_project', projectId);
+
+      const handleReceive = (data) => {
+        setMessages((prev) => [...prev, {
+          sender: data.sender || 'Unknown',
+          text: data.text,
+          timestamp: data.timestamp || new Date().toLocaleTimeString()
+        }]);
+      };
+
+      socket.on('receive_message', handleReceive);
+
+      return () => {
+        socket.off('receive_message', handleReceive);
+        socket.disconnect();
+      };
+    }
   }, [projectId]);
 
   useEffect(() => {
@@ -33,9 +62,12 @@ const TerminalChat = () => {
     e.preventDefault();
     if (!input.trim()) return;
 
+    if (input.startsWith('/')) return; // Handled in onKeyDown
+
     const msgData = {
       projectId,
       sender: user.name,
+      senderId: user.id || user._id, // Pass sender ID to save to DB
       text: input,
       timestamp: new Date().toLocaleTimeString()
     };
@@ -64,7 +96,10 @@ const TerminalChat = () => {
   };
 
   const onInputChange = (e) => {
-    setInput(e.target.value);
+    // Enforce 250 character limit
+    if (e.target.value.length <= 250) {
+      setInput(e.target.value);
+    }
   };
 
   const onKeyDown = (e) => {
@@ -122,17 +157,24 @@ const TerminalChat = () => {
           flex: 1, 
           overflowY: 'auto', 
           padding: '20px', 
-          backgroundColor: '#0d1117' 
+          backgroundColor: '#0d1117',
+          display: 'flex',
+          flexDirection: 'column'
         }}>
           <div style={{ color: 'var(--neon-green)', marginBottom: '16px', fontSize: '13px' }}>
             [System] Connection established. Welcome to the chat.
           </div>
           {messages.map((m, i) => (
-            <div key={i} style={{ marginBottom: '10px', fontSize: '14px', lineHeight: 1.4 }}>
-              <span style={{ color: m.sender === 'SYSTEM' ? '#f2cc60' : 'var(--neon-green)', marginRight: '8px' }}>
+             <div key={i} style={{ marginBottom: '10px', fontSize: '14px', lineHeight: 1.4, display: 'flex' }}>
+              <span style={{ color: m.sender === 'SYSTEM' ? '#f2cc60' : 'var(--neon-green)', marginRight: '8px', flexShrink: 0 }}>
                 [{m.timestamp}] {m.sender}:
               </span>
-              <span style={{ color: 'var(--text-main)' }}>{m.text}</span>
+              <span style={{ 
+                color: 'var(--text-main)', 
+                wordBreak: 'break-word', 
+                whiteSpace: 'pre-wrap',
+                flexGrow: 1
+              }}>{m.text}</span>
             </div>
           ))}
           <div ref={chatEndRef} />
@@ -143,7 +185,8 @@ const TerminalChat = () => {
           padding: '16px', 
           borderTop: '1px solid var(--border-color)', 
           display: 'flex',
-          backgroundColor: '#161b22'
+          backgroundColor: '#161b22',
+          position: 'relative'
         }}>
           <span style={{ color: 'var(--neon-green)', marginRight: '8px' }}>$</span>
           <input 
@@ -151,6 +194,7 @@ const TerminalChat = () => {
             value={input}
             onChange={onInputChange}
             onKeyDown={onKeyDown}
+            maxLength={250}
             autoFocus
             placeholder="Type message or /command..."
             style={{
@@ -163,6 +207,15 @@ const TerminalChat = () => {
               fontSize: '14px'
             }}
           />
+          <div style={{ 
+            position: 'absolute', 
+            right: '16px', 
+            bottom: '16px', 
+            fontSize: '11px', 
+            color: input.length >= 250 ? 'red' : 'var(--text-muted)' 
+          }}>
+            {input.length}/250
+          </div>
         </form>
       </div>
     </div>

@@ -46,6 +46,7 @@ export const fetchProjects = () => api.get('/projects');
 export const createProject = (projectData) => api.post('/projects', projectData);
 export const applyToProject = (projectId, userSkills) => api.post(`/projects/${projectId}/apply`, { userSkills });
 export const fetchUserApplications = () => api.get('/projects/my-applications');
+export const deleteProject = (projectId) => api.delete(`/projects/${projectId}`);
 
 // Challenges & Arena
 export const fetchDailyChallenge = () => api.get('/challenges/daily');
@@ -55,6 +56,13 @@ export const testSubmitSolution = (challengeId, code, language) => api.post('/ch
 // Tests & Reviews
 export const submitTest = (testId, userAnswers) => api.post('/tests/submit', { testId, userAnswers });
 export const submitReview = (reviewData) => api.post('/reviews/add', reviewData);
+
+// Snippets
+export const getSnippets = () => api.get('/snippets');
+export const createSnippet = (snippet) => api.post('/snippets', snippet);
+export const starSnippet = (id) => api.post(`/snippets/${id}/star`);
+export const updateSnippet = (id, snippet) => api.put(`/snippets/${id}`, snippet);
+export const deleteSnippet = (id) => api.delete(`/snippets/${id}`);
 
 // Leaderboard
 export const fetchLeaderboard = () => api.get('/leaderboard');

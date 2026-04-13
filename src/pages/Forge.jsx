@@ -33,18 +33,47 @@ const Forge = () => {
     }
   };
 
+  const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this snippet?')) return;
+    try {
+      await api.delete(`/snippets/${id}`);
+      setSnippets(snippets.filter(s => s._id !== id));
+    } catch (error) {
+      console.error('Failed to delete snippet', error);
+    }
+  };
+
+  const handleEdit = (snippet) => {
+    setNewSnippet({
+      id: snippet._id,
+      title: snippet.title,
+      description: snippet.description,
+      code: snippet.code,
+      tags: snippet.tags?.join(', ') || ''
+    });
+    setShowAdd(true);
+  };
+
   const handleAdd = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await api.post('/snippets', {
+      const payload = {
         ...newSnippet,
         tags: newSnippet.tags.split(',').map(t => t.trim())
-      });
-      setSnippets([data, ...snippets]);
+      };
+
+      if (newSnippet.id) {
+        const { data } = await api.put(`/snippets/${newSnippet.id}`, payload);
+        setSnippets(snippets.map(s => s._id === newSnippet.id ? data : s));
+      } else {
+        const { data } = await api.post('/snippets', payload);
+        setSnippets([data, ...snippets]);
+      }
+      
       setShowAdd(false);
       setNewSnippet({ title: '', description: '', code: '', tags: '' });
     } catch (error) {
-      console.error('Forge creation failed', error);
+      console.error('Forge creation/update failed', error);
     }
   };
 
@@ -71,7 +100,7 @@ const Forge = () => {
 
       {showAdd && (
         <div className="card glass mb-2" style={{ animation: 'fadeIn 0.3s ease' }}>
-          <h2 className="mono mb-1" style={{ fontSize: '1.2rem', color: 'var(--neon-green)' }}>New Artifact.js</h2>
+          <h2 className="mono mb-1" style={{ fontSize: '1.2rem', color: 'var(--neon-green)' }}>{newSnippet.id ? 'Edit Artifact.js' : 'New Artifact.js'}</h2>
           <form onSubmit={handleAdd}>
             <div className="form-group">
               <label className="form-label mono">TITLE</label>
@@ -109,7 +138,7 @@ const Forge = () => {
                 onChange={e => setNewSnippet({...newSnippet, tags: e.target.value})} 
               />
             </div>
-            <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>Commit to Forge</button>
+            <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>{newSnippet.id ? 'Save Changes' : 'Commit to Forge'}</button>
           </form>
         </div>
       )}
@@ -120,18 +149,26 @@ const Forge = () => {
             <div>
               <div className="flex justify-between items-start mb-1">
                 <h3 className="mono" style={{ color: 'var(--neon-green)', fontSize: '1.1rem' }}>{s.title}</h3>
-                <button 
-                  onClick={() => handleStar(s._id)} 
-                  className="mono" 
-                  style={{ 
-                    background: 'transparent', 
-                    border: 'none', 
-                    cursor: 'pointer', 
-                    color: s.starredBy?.includes(user?.id) ? 'var(--neon-green)' : 'var(--text-muted)' 
-                  }}
-                >
-                  ★ {s.stars}
-                </button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  {s.authorId?._id === user?.id && (
+                    <>
+                      <button onClick={() => handleEdit(s)} style={{ background: 'none', border: 'none', color: 'var(--link-color)', cursor: 'pointer', fontSize: '12px' }}>Edit</button>
+                      <button onClick={() => handleDelete(s._id)} style={{ background: 'none', border: 'none', color: '#f85149', cursor: 'pointer', fontSize: '12px' }}>Delete</button>
+                    </>
+                  )}
+                  <button 
+                    onClick={() => handleStar(s._id)} 
+                    className="mono" 
+                    style={{ 
+                      background: 'transparent', 
+                      border: 'none', 
+                      cursor: 'pointer', 
+                      color: s.starredBy?.includes(user?.id) ? 'var(--neon-green)' : 'var(--text-muted)' 
+                    }}
+                  >
+                    ★ {s.stars}
+                  </button>
+                </div>
               </div>
               <p className="text-muted" style={{ fontSize: '13px', marginBottom: '12px' }}>{s.description}</p>
               <pre className="mono" style={{ 

@@ -53,4 +53,49 @@ const starSnippet = async (req, res, next) => {
   }
 };
 
-module.exports = { getSnippets, createSnippet, starSnippet };
+const updateSnippet = async (req, res, next) => {
+  try {
+    const { title, description, code, language, tags } = req.body;
+    let snippet = await Snippet.findById(req.params.id);
+
+    if (!snippet) {
+      return res.status(404).json({ message: 'Snippet not found' });
+    }
+
+    if (snippet.authorId.toString() !== req.user.id) {
+      return res.status(401).json({ message: 'Not authorized to edit this snippet' });
+    }
+
+    snippet.title = title || snippet.title;
+    snippet.description = description || snippet.description;
+    snippet.code = code || snippet.code;
+    snippet.language = language || snippet.language;
+    snippet.tags = tags || snippet.tags;
+
+    await snippet.save();
+    res.json(snippet);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const deleteSnippet = async (req, res, next) => {
+  try {
+    const snippet = await Snippet.findById(req.params.id);
+
+    if (!snippet) {
+      return res.status(404).json({ message: 'Snippet not found' });
+    }
+
+    if (snippet.authorId.toString() !== req.user.id) {
+      return res.status(401).json({ message: 'Not authorized to delete this snippet' });
+    }
+
+    await snippet.deleteOne();
+    res.json({ message: 'Snippet removed' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { getSnippets, createSnippet, starSnippet, updateSnippet, deleteSnippet };
