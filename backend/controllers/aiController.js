@@ -64,7 +64,7 @@ export const generateSprintPlan = async (req, res) => {
   try {
     const { description } = req.body;
     if (!description) return res.status(400).json({ error: 'Project description is required' });
-    const prompt = `Break down this project into development tasks organized by sprint phase.\nReturn ONLY valid JSON matching this schema:\n{\n  "todo": [{"title": "string", "description": "string", "priority": "low|medium|high"}],\n  "in_progress": [],\n  "review": [],\n  "done": []\n}\n\nProject: ${description}\n\nReturn ONLY raw JSON, no markdown wrappers.`;
+    const prompt = `Break down this project into development tasks organized by sprint phase.\nReturn ONLY valid JSON matching this schema:\n{\n  "backlog": [{"title": "string", "description": "string", "priority": "low|medium|high"}],\n  "todo": [{"title": "string", "description": "string", "priority": "low|medium|high"}],\n  "in_progress": [],\n  "review": [],\n  "done": []\n}\n\nProject: ${description}\n\nReturn ONLY raw JSON, no markdown wrappers.`;
     const result = await ai.models.generateContent({ model: MODEL, contents: prompt });
     let rawText = result.text.trim();
     if (rawText.startsWith('```json')) { rawText = rawText.replace(/^```json/, '').replace(/```$/, '').trim(); }

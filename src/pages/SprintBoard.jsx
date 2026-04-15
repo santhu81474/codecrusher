@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-hot-toast';
 
 const COLUMNS = [
+  { id: 'backlog', label: 'Backlog', color: '#7a828e' },
   { id: 'todo', label: 'To Do', color: 'var(--text-muted)' },
   { id: 'in_progress', label: 'In Progress', color: 'var(--accent-amber)' },
   { id: 'review', label: 'In Review', color: 'var(--primary)' },
@@ -24,7 +25,7 @@ const SprintBoard = () => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [addingToColumn, setAddingToColumn] = useState('todo');
+  const [addingToColumn, setAddingToColumn] = useState('backlog');
   const [newTask, setNewTask] = useState({ title: '', description: '', priority: 'medium' });
   const [generating, setGenerating] = useState(false);
   const [draggedTask, setDraggedTask] = useState(null);
@@ -139,8 +140,8 @@ const SprintBoard = () => {
     return (
       <div style={{ maxWidth: '1300px', margin: '0 auto', padding: '0 20px' }}>
         <div className="skeleton" style={{ height: '40px', width: '300px', marginBottom: '24px', borderRadius: '8px' }} />
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
-          {[1,2,3,4].map(i => <div key={i} className="skeleton" style={{ height: '400px', borderRadius: '12px' }} />)}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '16px' }}>
+          {[1,2,3,4,5].map(i => <div key={i} className="skeleton" style={{ height: '400px', borderRadius: '12px' }} />)}
         </div>
       </div>
     );
@@ -157,14 +158,14 @@ const SprintBoard = () => {
           <button onClick={handleAIPlan} disabled={generating} className="btn btn-outline" style={{ fontSize: '12px', gap: '6px' }}>
             {generating ? 'Generating...' : '✦ AI Sprint Planner'}
           </button>
-          <button onClick={() => { setAddingToColumn('todo'); setShowAddModal(true); }} className="btn btn-primary" style={{ fontSize: '12px' }}>
+          <button onClick={() => { setAddingToColumn('backlog'); setShowAddModal(true); }} className="btn btn-primary" style={{ fontSize: '12px' }}>
             + Add Task
           </button>
         </div>
       </div>
 
       {/* Kanban Board */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', minHeight: '500px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '16px', minHeight: '500px' }}>
         {COLUMNS.map(col => (
           <div
             key={col.id}

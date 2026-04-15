@@ -92,7 +92,7 @@ export const addTask = async (req, res, next) => {
     const isAuthorized = project.ownerId.toString() === req.user.id || (project.contributors || []).map(c => c.toString()).includes(req.user.id);
     if (!isAuthorized) return res.status(403).json({ message: 'Not authorized' });
     const { title, description, assignee, status, priority, dueDate } = req.body;
-    project.tasks.push({ title, description, assignee, status: status || 'todo', priority: priority || 'medium', dueDate });
+    project.tasks.push({ title, description, assignee, status: status || 'backlog', priority: priority || 'medium', dueDate });
     await project.save();
     const updated = await Project.findById(req.params.id).populate('tasks.assignee', 'name username avatar');
     res.json(updated.tasks);
