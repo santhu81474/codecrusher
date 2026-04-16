@@ -3,8 +3,14 @@ import bcrypt from 'bcryptjs';
 import User from '../models/User.js';
 
 const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET || 'super_secret_jwt_signature_key', { expiresIn: '30d' });
+  if (!process.env.JWT_SECRET) {
+    throw new Error('JWT_SECRET is not defined in environment variables');
+  }
+  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' });
 };
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MIN_PASSWORD_LENGTH = 6;
 
 const generateUsername = async (name) => {
   const base = name.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 15);
@@ -25,6 +31,12 @@ export const register = async (req, res, next) => {
     const { name, email, password, skills, githubUrl, linkedinUrl, username: requestedUsername } = req.body;
     if (!name || !email || !password) {
       return res.status(400).json({ message: 'Please add all required fields' });
+    }
+    if (!EMAIL_REGEX.test(email)) {
+      return res.status(400).json({ message: 'Please provide a valid email address' });
+    }
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      return res.status(400).json({ message: `Password must be at least ${MIN_PASSWORD_LENGTH} characters long` });
     }
     const userExists = await User.findOne({ email });
     if (userExists) {

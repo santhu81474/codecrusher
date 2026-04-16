@@ -35,10 +35,12 @@ export const searchUsers = async (req, res, next) => {
   try {
     const { q } = req.query;
     if (!q) return res.status(400).json({ message: 'Search query is required' });
+    // Escape special regex characters to prevent ReDoS
+    const sanitized = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const users = await User.find({
       $or: [
-        { username: { $regex: q, $options: 'i' } },
-        { name: { $regex: q, $options: 'i' } }
+        { username: { $regex: sanitized, $options: 'i' } },
+        { name: { $regex: sanitized, $options: 'i' } }
       ]
     }).select('name username avatar bio skills rating connections followers karma').limit(20);
     res.json(users);

@@ -31,7 +31,7 @@ export const starSnippet = async (req, res, next) => {
     if (!snippet) return res.status(404).json({ message: 'Snippet not found' });
     if (snippet.starredBy.includes(req.user.id)) {
       snippet.starredBy = snippet.starredBy.filter(uid => uid.toString() !== req.user.id);
-      snippet.stars -= 1;
+      snippet.stars = Math.max(0, snippet.stars - 1);
     } else {
       snippet.starredBy.push(req.user.id);
       snippet.stars += 1;

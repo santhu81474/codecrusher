@@ -11,7 +11,10 @@ export const protect = (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'super_secret_jwt_signature_key');
+    if (!process.env.JWT_SECRET) {
+      return res.status(500).json({ message: 'Server configuration error: JWT_SECRET not set' });
+    }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded;
     next();
   } catch (error) {

@@ -60,7 +60,7 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
-app.use(express.json());
+app.use(express.json({ limit: '1mb' }));
 
 // Route Mappings
 app.use((req, res, next) => {
@@ -195,8 +195,15 @@ codecastIo.on('connection', (socket) => {
 });
 
 
-console.log('ENV CHECK:', process.env.MONGO_URI ? 'Loaded' : 'Missing');
-console.log('Using MONGO_URI value:', process.env.MONGO_URI);
+// Validate required environment variables on startup
+const requiredEnvVars = ['JWT_SECRET', 'MONGO_URI'];
+const missingVars = requiredEnvVars.filter(v => !process.env[v]);
+if (missingVars.length > 0) {
+  console.error(`FATAL: Missing required environment variables: ${missingVars.join(', ')}`);
+  console.error('Server cannot start securely. Please set these in your .env file.');
+  process.exit(1);
+}
+console.log('ENV CHECK: All required variables loaded.');
 
 // Start the Protocol
 const PORT = process.env.PORT || 5001;
