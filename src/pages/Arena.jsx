@@ -410,7 +410,7 @@ AI:`
 
       <div style={{ 
         display: 'grid', 
-        gridTemplateColumns: showAssistant ? '1fr 500px' : '1fr', 
+        gridTemplateColumns: showAssistant ? '1fr 380px' : '1fr', 
         gap: '40px', 
         transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
         flex: 1
@@ -693,11 +693,11 @@ AI:`
                     {m.sender} // {new Date().toLocaleTimeString()}
                   </div>
                   <div style={{ 
-                    backgroundColor: m.sender === 'AI' ? 'rgba(46, 204, 113, 0.05)' : 'rgba(88, 166, 255, 0.05)', 
+                    backgroundColor: m.sender === 'AI' ? 'rgba(46, 204, 113, 0.05)' : 'var(--primary-glow)', 
                     padding: '16px 20px', 
                     borderRadius: m.sender === 'YOU' ? '12px 12px 0 12px' : '12px 12px 12px 0',
-                    border: `1px solid ${m.sender === 'AI' ? 'rgba(46, 204, 113, 0.2)' : 'rgba(88, 166, 255, 0.2)'}`,
-                    boxShadow: `0 4px 15px ${m.sender === 'AI' ? 'rgba(46,204,113,0.05)' : 'rgba(88,166,255,0.05)'}`
+                    border: `1px solid ${m.sender === 'AI' ? 'rgba(46, 204, 113, 0.2)' : 'var(--border-hover)'}`,
+                    boxShadow: `0 4px 15px ${m.sender === 'AI' ? 'rgba(46,204,113,0.05)' : 'var(--shadow-glow)'}`
                   }}>
                     <div className="mono" style={{ color: 'var(--text-main)', lineHeight: 1.6, fontSize: '13px', whiteSpace: 'pre-wrap' }}>{m.text}</div>
                     

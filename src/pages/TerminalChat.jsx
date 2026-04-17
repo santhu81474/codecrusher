@@ -94,12 +94,12 @@ const TerminalChat = () => {
         // Handle inline code
         const inlineParts = line.split(/(`[^`]+`)/g).map((seg, j) => {
           if (seg.startsWith('`') && seg.endsWith('`')) {
-            return <code key={j} style={{ background: 'rgba(129,140,248,0.1)', padding: '1px 5px', borderRadius: '3px', fontSize: '12px', fontFamily: 'var(--font-mono)' }}>{seg.slice(1, -1)}</code>;
+            return <code key={j} style={{ background: 'var(--primary-glow)', padding: '2px 6px', borderRadius: '4px', fontSize: '12px', fontFamily: 'var(--font-mono)', border: '1px solid var(--border)' }}>{seg.slice(1, -1)}</code>;
           }
           // Bold
           return seg.split(/(\*\*.*?\*\*)/g).map((s, k) => {
             if (s.startsWith('**') && s.endsWith('**')) {
-              return <strong key={k}>{s.slice(2, -2)}</strong>;
+              return <strong key={k} style={{ color: 'var(--text-primary)' }}>{s.slice(2, -2)}</strong>;
             }
             return s;
           });
@@ -113,80 +113,102 @@ const TerminalChat = () => {
   const charCount = input.length;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 120px)', maxWidth: '800px', margin: '0 auto', padding: '0 20px' }}>
-      <h1 className="page-title" style={{ marginBottom: '16px' }}>AI Terminal</h1>
-      
-      {/* Messages */}
-      <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px', paddingBottom: '16px' }}>
-        {messages.length === 0 && !loading && (
-          <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-muted)' }}>
-            <p style={{ fontSize: '14px', marginBottom: '8px' }}>Ask me anything about coding, debugging, or the CodeCrusher platform.</p>
-            <p style={{ fontSize: '12px' }}>Messages are saved and persist across sessions.</p>
-          </div>
-        )}
-        {messages.map((msg, index) => (
-          <div key={msg._id || index} style={{ display: 'flex', justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start' }}>
-            <div style={{
-              maxWidth: '85%', padding: '12px 16px', borderRadius: '12px',
-              backgroundColor: msg.role === 'user' ? 'var(--primary-glow)' : 'var(--surface-2)',
-              border: `1px solid ${msg.role === 'user' ? 'rgba(129,140,248,0.2)' : 'var(--border)'}`,
-              wordBreak: 'break-word', overflowWrap: 'break-word', whiteSpace: 'pre-wrap', overflow: 'hidden'
-            }}>
-              <div style={{ fontSize: '13px', lineHeight: 1.6, color: 'var(--text-primary)' }}>
-                {renderContent(msg.content)}
-              </div>
-              <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '6px', textAlign: 'right' }}>
-                {new Date(msg.createdAt).toLocaleTimeString()}
-              </div>
-            </div>
-          </div>
-        ))}
-        {loading && (
-          <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
-            <div style={{ padding: '12px 16px', borderRadius: '12px', backgroundColor: 'var(--surface-2)', border: '1px solid var(--border)' }}>
-              <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--primary)', animation: 'pulse 1s infinite' }} />
-                <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--primary)', animation: 'pulse 1s infinite 0.2s' }} />
-                <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--primary)', animation: 'pulse 1s infinite 0.4s' }} />
-              </div>
-            </div>
-          </div>
-        )}
-        <div ref={chatEndRef} />
+    <div className="container" style={{ maxWidth: '900px', margin: '0 auto', padding: '24px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
+        <h1 className="page-title" style={{ margin: 0 }}>Terminal Chat</h1>
       </div>
+      
+      <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 180px)', overflow: 'hidden' }}>
+        {/* Messages */}
+        <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '16px', padding: '24px' }}>
+          {messages.length === 0 && !loading && (
+            <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--text-muted)' }}>
+              <div style={{ width: '48px', height: '48px', margin: '0 auto 16px', borderRadius: '50%', background: 'var(--primary-glow)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <span style={{ fontSize: '24px' }}>💬</span>
+              </div>
+              <p style={{ fontSize: '15px', marginBottom: '8px', color: 'var(--text-primary)', fontWeight: '500' }}>Terminal Assistant</p>
+              <p style={{ fontSize: '13px' }}>Ask me anything about algorithms, debugging, or the CodeCrusher platform.</p>
+            </div>
+          )}
+          {messages.map((msg, index) => (
+            <div key={msg._id || index} style={{ display: 'flex', justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start' }}>
+              <div style={{
+                maxWidth: '85%', padding: '14px 18px', borderRadius: msg.role === 'user' ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
+                backgroundColor: msg.role === 'user' ? 'var(--primary-glow)' : 'var(--surface-2)',
+                border: `1px solid ${msg.role === 'user' ? 'var(--border-hover)' : 'var(--border)'}`,
+                wordBreak: 'break-word', overflowWrap: 'break-word', whiteSpace: 'pre-wrap', overflow: 'hidden',
+                boxShadow: 'var(--shadow-sm)'
+              }}>
+                <div style={{ fontSize: '14px', lineHeight: 1.6, color: 'var(--text-primary)' }}>
+                  {renderContent(msg.content)}
+                </div>
+                <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '8px', textAlign: 'right' }}>
+                  {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </div>
+              </div>
+            </div>
+          ))}
+          {loading && (
+            <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
+              <div style={{ padding: '14px 18px', borderRadius: '16px 16px 16px 4px', backgroundColor: 'var(--surface-2)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)' }}>
+                <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                  <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--primary)', animation: 'pulse 1s infinite' }} />
+                  <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--primary)', animation: 'pulse 1s infinite 0.2s' }} />
+                  <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--primary)', animation: 'pulse 1s infinite 0.4s' }} />
+                </div>
+              </div>
+            </div>
+          )}
+          <div ref={chatEndRef} />
+        </div>
 
-      {/* Input */}
-      <div style={{ borderTop: '1px solid var(--border)', padding: '12px 0' }}>
-        <form onSubmit={handleSend}>
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            maxLength={250}
-            placeholder="Ask the AI anything..."
-            className="form-input"
-            rows="2"
-            style={{ resize: 'none', marginBottom: '8px', fontFamily: 'var(--font-main)' }}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                handleSend(e);
-              }
-            }}
-          />
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '12px', color: charCount > 200 ? 'var(--accent-red)' : 'var(--text-muted)' }}>
-              {charCount}/250
-            </span>
-            <button
-              type="submit"
-              disabled={!input.trim() || charCount > 250 || loading}
-              className="btn btn-primary"
-              style={{ padding: '8px 20px', fontSize: '13px' }}
-            >
-              {loading ? 'Thinking...' : 'Send'}
-            </button>
-          </div>
-        </form>
+        {/* Input */}
+        <div style={{ borderTop: '1px solid var(--border)', padding: '16px 24px', backgroundColor: 'var(--surface-2)' }}>
+          <form onSubmit={handleSend}>
+            <div style={{ position: 'relative' }}>
+              <textarea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                maxLength={250}
+                placeholder="Ask the AI anything..."
+                className="form-input"
+                rows="2"
+                style={{ 
+                  resize: 'none', 
+                  fontFamily: 'var(--font-main)', 
+                  paddingRight: '80px',
+                  backgroundColor: 'var(--bg-color)'
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSend(e);
+                  }
+                }}
+              />
+              <button
+                type="submit"
+                disabled={!input.trim() || charCount > 250 || loading}
+                className="btn btn-primary"
+                style={{ 
+                  position: 'absolute', 
+                  right: '8px', 
+                  bottom: '12px', 
+                  padding: '6px 14px', 
+                  fontSize: '12px' 
+                }}
+              >
+                {loading ? '...' : 'Send'}
+              </button>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px' }}>
+              <span style={{ fontSize: '11px', color: charCount > 200 ? 'var(--accent-red)' : 'var(--text-muted)' }}>
+                {charCount}/250 characters
+              </span>
+              <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Press Enter to send, Shift+Enter for new line</span>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

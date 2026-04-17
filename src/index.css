@@ -31,17 +31,17 @@
   --border-hover: rgba(255, 255, 255, 0.16);
 
   /* Brand colors */
-  --primary: #818cf8;
-  --primary-dark: #6366f1;
-  --primary-hover: #a5b4fc;
-  --primary-glow: rgba(129, 140, 248, 0.15);
+  --primary: #a1a1aa;
+  --primary-dark: #71717a;
+  --primary-hover: #e4e4e7;
+  --primary-glow: rgba(161, 161, 170, 0.15);
   --primary-text: #000000;
 
   /* Accent colors */
   --accent-green: #10b981;
   --accent-amber: #f59e0b;
   --accent-red: #ef4444;
-  --accent-blue: #3b82f6;
+  --accent-blue: #94a3b8;
   --accent-purple: #a78bfa;
 
   /* Legacy compat */
