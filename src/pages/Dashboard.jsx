@@ -149,6 +149,14 @@ const Dashboard = () => {
       {/* Left Column: Main Dashboard (70%) */}
       <div style={{ flex: 7, minWidth: 0 }}>
         
+        {/* Welcome Banner */}
+        <div className="welcome-banner">
+          <div className="welcome-name">Welcome back, {user?.name?.split(' ')[0] || 'Operator'}</div>
+          <div className="welcome-subtitle">
+            Session active · {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' })}
+          </div>
+        </div>
+
         {/* Command Center Stats Bar */}
         <div className="glass-panel neon-border-dynamic scan-line" style={{ 
           display: 'flex', 

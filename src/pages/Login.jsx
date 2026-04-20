@@ -43,7 +43,7 @@ const Login = () => {
             </linearGradient>
           </defs>
         </svg>
-        <h2 style={{ fontSize: '24px', fontWeight: '300', marginBottom: 0 }}>TeamForge Sign-in</h2>
+        <h2 style={{ fontSize: '24px', fontWeight: '300', marginBottom: 0 }}>CodeCrusher Sign-in</h2>
       </div>
 
       {error && <div style={{ backgroundColor: 'rgba(248, 81, 73, 0.1)', border: '1px solid rgba(248, 81, 73, 0.4)', color: '#ff7b72', padding: '12px', borderRadius: '6px', marginBottom: '16px', fontSize: '13px' }}>{error}</div>}
@@ -75,7 +75,7 @@ const Login = () => {
       </form>
 
       <div style={{ marginTop: '24px', borderTop: '1px solid var(--border-color)', paddingTop: '16px', textAlign: 'center', fontSize: '14px', color: 'var(--text-muted)' }}>
-        No presence node found? <Link to="/signup" style={{ color: 'var(--link-color)' }}>Construct a footprint.</Link>
+        New to CodeCrusher? <Link to="/signup" style={{ color: 'var(--link-color)' }}>Create an account.</Link>
       </div>
     </div>
   );
