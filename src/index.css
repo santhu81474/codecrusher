@@ -94,6 +94,11 @@ body {
   overflow-x: hidden;
 }
 
+::selection {
+  background: var(--primary-glow);
+  color: var(--primary);
+}
+
 a {
   text-decoration: none;
   color: var(--link-color);
