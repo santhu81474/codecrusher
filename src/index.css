@@ -455,6 +455,16 @@ h1, h2, h3, h4, h5, h6 {
   border-color: var(--border-hover);
 }
 
+.btn-danger {
+  background: rgba(239, 68, 68, 0.12);
+  color: var(--accent-red);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+.btn-danger:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.5);
+}
+
 /* ============================================================
    FORMS
    ============================================================ */
@@ -704,6 +714,16 @@ tr:hover td { background-color: rgba(255,255,255,0.02); color: var(--text-primar
 @media (max-width: 480px) {
   .page-title { font-size: 20px; }
   .navbar-search-input { display: none; }
+}
+
+@media (max-width: 900px) {
+  .welcome-banner {
+    padding: 16px 20px;
+    margin-bottom: 20px;
+  }
+  .welcome-name {
+    font-size: 18px;
+  }
 }
 
 /* ============================================================

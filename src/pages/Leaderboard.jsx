@@ -33,7 +33,10 @@ const Leaderboard = () => {
   return (
     <div style={{ maxWidth: '800px', margin: '0 auto' }}>
       <div className="flex justify-between items-center mb-2" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-        <h1 className="page-title" style={{ marginBottom: 0 }}>Leaderboard</h1>
+        <div>
+          <h1 className="page-title" style={{ marginBottom: 0 }}>Leaderboard</h1>
+          <p className="page-subtitle">Top contributors ranked by skill rating and project impact.</p>
+        </div>
         {myIndex !== -1 && (
           <div className="card" style={{ padding: '6px 12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span style={{
@@ -55,6 +58,16 @@ const Leaderboard = () => {
           </div>
         )}
       </div>
+
+      {users.length === 0 ? (
+        <div className="empty-state">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 15l-2-2m0 0l2-2m-2 2h12M5.5 8V6a2 2 0 012-2h9a2 2 0 012 2v12a2 2 0 01-2 2h-9a2 2 0 01-2-2v-2" />
+          </svg>
+          <h2 className="empty-state-title">No rankings yet</h2>
+          <p className="empty-state-desc">Complete skill tests and contribute to projects to appear on the leaderboard.</p>
+        </div>
+      ) : (
 
       <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
@@ -111,6 +124,7 @@ const Leaderboard = () => {
           </tbody>
         </table>
       </div>
+      )}
     </div>
   );
 };
