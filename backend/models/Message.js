@@ -8,4 +8,8 @@ const messageSchema = new mongoose.Schema({
   timestamp: { type: Date, default: Date.now }
 }, { timestamps: true });
 
+// Compound index for fetching project messages sorted chronologically
+messageSchema.index({ projectId: 1, timestamp: -1 });
+messageSchema.index({ senderId: 1 });
+
 export default mongoose.model('Message', messageSchema);

@@ -29,4 +29,8 @@ const projectSchema = new mongoose.Schema({
   tasks: [taskSchema]
 }, { timestamps: true });
 
+projectSchema.index({ ownerId: 1, createdAt: -1 });
+projectSchema.index({ status: 1 });
+projectSchema.index({ applicationDeadline: 1 }, { sparse: true });
+
 export default mongoose.model('Project', projectSchema);
