@@ -35,3 +35,7 @@ TeamForge is a collaborative platform designed for developers to connect, build 
    ```
 4. Set up your `.env` files for both frontend and backend as needed.
 5. Start the development servers.
+
+---
+
+> **Last Updated:** April 2026
