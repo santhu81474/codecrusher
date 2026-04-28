@@ -2,7 +2,9 @@ import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  username: { type: String, unique: true, sparse: true, default: '' },
+  // No default for username — sparse unique index only skips null/undefined, NOT empty strings.
+  // Allowing '' as default caused 409 duplicate key errors on every connect/save for new users.
+  username: { type: String, unique: true, sparse: true },
   email: { type: String, required: true, unique: true, match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Please provide a valid email address'] },
   password: { type: String, required: true },
   bio: { type: String, default: '' },
@@ -10,6 +12,7 @@ const userSchema = new mongoose.Schema({
   skills: { type: [String], default: [] },
   rating: { type: Number, default: 0 },
   karma: { type: Number, default: 0 },
+  points: { type: Number, default: 0 },
   projectsCompleted: { type: Number, default: 0 },
   isDemo: { type: Boolean, default: false },
   githubUrl: { type: String, default: '' },

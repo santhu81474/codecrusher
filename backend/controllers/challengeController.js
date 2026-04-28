@@ -40,7 +40,7 @@ export const submitSolution = async (req, res, next) => {
       memoryUsage: result.memoryUsageEstimate || 0, pointsEarned
     });
     if (result.isCorrect) {
-      await User.findByIdAndUpdate(req.user.id, { $inc: { points: pointsEarned, arenaXP: pointsEarned, challengesSolved: 1 } });
+      await User.findByIdAndUpdate(req.user.id, { $inc: { points: pointsEarned, arenaXP: pointsEarned, karma: Math.floor(pointsEarned / 10), challengesSolved: 1 } });
     }
     res.status(result.isCorrect ? 201 : 200).json({
       message: result.isCorrect ? 'Transmission Successful. Algorithm Verified.' : 'CRITICAL_ERROR: Logic Mismatch Detected.',

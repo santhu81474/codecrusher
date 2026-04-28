@@ -51,23 +51,51 @@ export const connectUser = async (req, res, next) => {
   try {
     const userToConnectId = req.params.id;
     const currentUserId = req.user.id;
-    if (userToConnectId === currentUserId) return res.status(400).json({ message: 'You cannot connect with yourself' });
-    const userToConnect = await User.findById(userToConnectId);
-    const currentUser = await User.findById(currentUserId);
-    if (!userToConnect || !currentUser) return res.status(404).json({ message: 'User not found' });
-    const isConnected = currentUser.connections && currentUser.connections.map(id => id.toString()).includes(userToConnectId);
-    if (isConnected) {
-      currentUser.connections = currentUser.connections.filter(id => id.toString() !== userToConnectId);
-      userToConnect.followers = (userToConnect.followers || []).filter(id => id.toString() !== currentUserId);
-    } else {
-      if (!currentUser.connections) currentUser.connections = [];
-      if (!userToConnect.followers) userToConnect.followers = [];
-      currentUser.connections.push(userToConnectId);
-      userToConnect.followers.push(currentUserId);
+
+    // Prevent self-connect
+    if (userToConnectId === currentUserId) {
+      return res.status(400).json({ message: 'You cannot connect with yourself' });
     }
-    await currentUser.save();
-    await userToConnect.save();
-    res.json({ message: isConnected ? 'Disconnected successfully' : 'Connected successfully', connected: !isConnected, connections: currentUser.connections });
+
+    // Verify both users exist
+    const [currentUser, userToConnect] = await Promise.all([
+      User.findById(currentUserId).select('connections'),
+      User.findById(userToConnectId).select('_id')
+    ]);
+    if (!currentUser || !userToConnect) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Check current connection state
+    const isConnected = currentUser.connections.some(
+      (id) => id.toString() === userToConnectId
+    );
+
+    if (isConnected) {
+      // DISCONNECT: atomic $pull — never triggers full document save/validation
+      await Promise.all([
+        User.findByIdAndUpdate(currentUserId, { $pull: { connections: userToConnectId } }),
+        User.findByIdAndUpdate(userToConnectId, { $pull: { followers: currentUserId } })
+      ]);
+      const updated = await User.findById(currentUserId).select('connections');
+      return res.json({
+        message: 'Disconnected successfully',
+        connected: false,
+        connections: updated.connections
+      });
+    } else {
+      // CONNECT: atomic $addToSet — prevents duplicates, never triggers full doc save
+      await Promise.all([
+        User.findByIdAndUpdate(currentUserId, { $addToSet: { connections: userToConnectId } }),
+        User.findByIdAndUpdate(userToConnectId, { $addToSet: { followers: currentUserId } })
+      ]);
+      const updated = await User.findById(currentUserId).select('connections');
+      return res.json({
+        message: 'Connected successfully',
+        connected: true,
+        connections: updated.connections
+      });
+    }
   } catch (error) { next(error); }
 };
 
@@ -75,14 +103,22 @@ export const disconnectUser = async (req, res, next) => {
   try {
     const userToDisconnectId = req.params.id;
     const currentUserId = req.user.id;
-    const currentUser = await User.findById(currentUserId);
-    const targetUser = await User.findById(userToDisconnectId);
-    if (!currentUser || !targetUser) return res.status(404).json({ message: 'User not found' });
-    currentUser.connections = (currentUser.connections || []).filter(id => id.toString() !== userToDisconnectId);
-    targetUser.followers = (targetUser.followers || []).filter(id => id.toString() !== currentUserId);
-    await currentUser.save();
-    await targetUser.save();
-    res.json({ message: 'Disconnected successfully', connections: currentUser.connections });
+
+    const [currentUser, targetUser] = await Promise.all([
+      User.findById(currentUserId).select('_id'),
+      User.findById(userToDisconnectId).select('_id')
+    ]);
+    if (!currentUser || !targetUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Atomic $pull — never triggers full document validation or unique index checks
+    await Promise.all([
+      User.findByIdAndUpdate(currentUserId, { $pull: { connections: userToDisconnectId } }),
+      User.findByIdAndUpdate(userToDisconnectId, { $pull: { followers: currentUserId } })
+    ]);
+    const updated = await User.findById(currentUserId).select('connections');
+    res.json({ message: 'Disconnected successfully', connections: updated.connections });
   } catch (error) { next(error); }
 };
 

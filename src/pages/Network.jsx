@@ -65,7 +65,7 @@ const Network = () => {
     try {
       const { data } = await api.post(`/users/connect/${id}`);
       
-      // Update connected state
+      // Update connected state from server response
       setConnectedIds(prev => {
         const next = new Set(prev);
         if (data.connected) {
@@ -78,7 +78,7 @@ const Network = () => {
         return next;
       });
 
-      // Refresh network
+      // Refresh network list — single call, only after state update
       const networkRes = await api.get('/users/network');
       setConnections(networkRes.data || []);
     } catch (error) {

@@ -7,7 +7,10 @@ export const generateChallenge = async () => {
   const prompt = `Generate a coding challenge for a "Hacker/Cyberpunk" themed platform.\nReturn ONLY valid JSON with:\ntitle, problemStatement, difficulty, points, category, testCases`;
   try {
     const res = await ai.models.generateContent({ model: MODEL, contents: prompt });
-    return JSON.parse(res.text);
+    let rawText = res.text.trim();
+    if (rawText.startsWith('```json')) { rawText = rawText.replace(/^```json/, '').replace(/```$/, '').trim(); }
+    else if (rawText.startsWith('```')) { rawText = rawText.replace(/^```/, '').replace(/```$/, '').trim(); }
+    return JSON.parse(rawText);
   } catch (err) {
     console.error("Gemini Generation Error:", err);
     return null;
@@ -21,7 +24,10 @@ export const validateSubmission = async (challenge, lang, code) => {
   const prompt = `Challenge: ${challenge.title}\n${challenge.problemStatement}\n\nLanguage: ${lang}\nCode:\n${code}\n\nReturn ONLY JSON:\n{\n  "isCorrect": boolean,\n  "feedback": "short",\n  "executionTimeEstimate": number,\n  "memoryUsageEstimate": number\n}`;
   try {
     const res = await ai.models.generateContent({ model: MODEL, contents: prompt });
-    return JSON.parse(res.text);
+    let rawText = res.text.trim();
+    if (rawText.startsWith('```json')) { rawText = rawText.replace(/^```json/, '').replace(/```$/, '').trim(); }
+    else if (rawText.startsWith('```')) { rawText = rawText.replace(/^```/, '').replace(/```$/, '').trim(); }
+    return JSON.parse(rawText);
   } catch (err) {
     console.error("Gemini Validation Error:", err);
     return { isCorrect: false, feedback: "AI_FAILURE" };

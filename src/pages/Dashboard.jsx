@@ -5,9 +5,6 @@ import { useAuth } from '../context/AuthContext';
 
 const Dashboard = () => {
   const { user } = useAuth();
-  if (!user) {
-    return <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>You are not logged in. Please log in again.</div>;
-  }
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ totalProjects: 0, myApplications: 0, myOwned: 0 });
@@ -18,11 +15,14 @@ const Dashboard = () => {
     { id: 3, text: 'Node 0xC3 deployed a new asset', time: '12m ago' },
   ]);
   const [selectedProject, setSelectedProject] = useState(null);
-  
+  const [invertedIndex, setInvertedIndex] = useState({});
+
   // Handling Global Search System Queries
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const searchQuery = queryParams.get('q') || '';
+
+  // Guard AFTER all hooks — Rules of Hooks requires hooks are always called unconditionally
 
   useEffect(() => {
     const loadRealProjects = async () => {
@@ -83,7 +83,6 @@ const Dashboard = () => {
   };
 
   // ADA Concept: Optimized Search via Inverted Index (O(k * m) pre-processing, O(1) or O(terms) lookup)
-  const [invertedIndex, setInvertedIndex] = useState({});
 
   useEffect(() => {
     if (projects.length > 0) {
@@ -100,6 +99,11 @@ const Dashboard = () => {
       }, 0);
     }
   }, [projects]);
+
+  // All hooks declared above — guard is safe here
+  if (!user) {
+    return <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>You are not logged in. Please log in again.</div>;
+  }
 
   // Optimized lookup using the index
   const getFilteredProjects = () => {

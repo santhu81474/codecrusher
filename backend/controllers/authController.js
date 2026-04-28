@@ -40,10 +40,10 @@ export const register = async (req, res, next) => {
     }
     const userExists = await User.findOne({ email });
     if (userExists) {
-      return res.status(400).json({ message: 'User already exists' });
+      return res.status(409).json({ message: 'An account with this email already exists' });
     }
-    let username = requestedUsername;
-    if (!username || username.trim() === '') {
+    let username = requestedUsername && requestedUsername.trim() !== '' ? requestedUsername.trim() : null;
+    if (!username) {
       username = await generateUsername(name);
     } else {
       const usernameTaken = await User.findOne({ username });
@@ -53,10 +53,14 @@ export const register = async (req, res, next) => {
     }
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-    const user = await User.create({
-      name, username, email, password: hashedPassword,
+    // Only set username if it resolved to a non-empty string; otherwise leave undefined
+    // so the sparse unique index is not violated.
+    const userPayload = {
+      name, email, password: hashedPassword,
       skills: skills || [], githubUrl: githubUrl || '', linkedinUrl: linkedinUrl || ''
-    });
+    };
+    if (username && username.trim() !== '') userPayload.username = username;
+    const user = await User.create(userPayload);
     if (user) {
       res.status(201).json({
         _id: user.id, name: user.name, username: user.username, email: user.email,
