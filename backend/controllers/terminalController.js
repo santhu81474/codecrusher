@@ -33,6 +33,6 @@ export const postTerminalMessage = async (req, res, next) => {
       const fallbackMsg = new TerminalMessage({ userId: req.user.id, role: 'assistant', content: 'Sorry, I encountered an error processing your request. Please try again.' });
       await fallbackMsg.save();
       res.json({ userMessage: { role: 'user', content: req.body.content, createdAt: new Date() }, assistantMessage: fallbackMsg });
-    } catch (fallbackError) { next(error); }
+    } catch { next(error); }
   }
 };

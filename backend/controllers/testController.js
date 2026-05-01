@@ -1,6 +1,6 @@
 export const submitTest = async (req, res, next) => {
   try {
-    const { testId, userAnswers } = req.body;
+    const { testId: _testId, userAnswers } = req.body;
     const correctAnswers = ["A", "C", "D", "B", "A"];
     let correctCount = 0;
     for (let i = 0; i < correctAnswers.length; i++) {

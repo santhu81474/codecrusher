@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 
+// eslint-disable-next-line no-unused-vars
 export const errorHandler = (err, req, res, next) => {
   const requestId = crypto.randomUUID().slice(0, 8);
   const timestamp = new Date().toISOString();

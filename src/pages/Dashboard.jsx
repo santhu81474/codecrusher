@@ -9,7 +9,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ totalProjects: 0, myApplications: 0, myOwned: 0 });
   // Mocked activity feed
-  const [activity, setActivity] = useState([
+  const [activity] = useState([
     { id: 1, text: 'Node 0xA1 joined Project Quantum', time: '2m ago' },
     { id: 2, text: 'Node 0xB7 submitted a review', time: '5m ago' },
     { id: 3, text: 'Node 0xC3 deployed a new asset', time: '12m ago' },
@@ -214,7 +214,7 @@ const Dashboard = () => {
           ) : (
             filteredProjects.map(project => {
               const hasApplied = project.applicants?.includes(user?.id);
-              const isOwner = project.ownerId?._id === user?.id;
+              const _isOwner = project.ownerId?._id === user?.id;
               
               return (
                 <div key={project._id} className="card glass-panel neon-hover" style={{ display: 'flex', flexDirection: 'column', padding: '24px', cursor: 'pointer' }} onClick={() => setSelectedProject(project)}>

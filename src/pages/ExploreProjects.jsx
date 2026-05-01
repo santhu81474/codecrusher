@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { fetchProjects, applyToProject } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-hot-toast';
@@ -50,8 +50,7 @@ const ExploreProjects = () => {
   const currentUserId = user?.id;
   useEffect(() => {
     const newFavorites = loadFavorites(currentUserId);
-    setFavorites(newFavorites);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    setFavorites(newFavorites); // eslint-disable-line react-hooks/set-state-in-effect
   }, [currentUserId]);
 
   const toggleFavorite = (projectId) => {

@@ -27,9 +27,12 @@ const Navbar = () => {
   // Search users via API
   useEffect(() => {
     if (!debouncedSearch.trim()) {
-      setSearchResults([]); // eslint-disable-line react-hooks/set-state-in-effect
-      setShowDropdown(false); // eslint-disable-line react-hooks/set-state-in-effect
-      return;
+      // Use a microtask to avoid synchronous setState in effect body
+      const id = setTimeout(() => {
+        setSearchResults([]);
+        setShowDropdown(false);
+      }, 0);
+      return () => clearTimeout(id);
     }
     const fetchResults = async () => {
       setSearching(true);
@@ -59,8 +62,11 @@ const Navbar = () => {
 
   // Close dropdown on navigation
   useEffect(() => {
-    setShowDropdown(false); // eslint-disable-line react-hooks/set-state-in-effect
-    setSearch(''); // eslint-disable-line react-hooks/set-state-in-effect
+    const id = setTimeout(() => {
+      setShowDropdown(false);
+      setSearch('');
+    }, 0);
+    return () => clearTimeout(id);
   }, [location.pathname]);
 
   const handleLogout = () => {

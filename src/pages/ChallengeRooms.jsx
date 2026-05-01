@@ -7,7 +7,7 @@ import io from 'socket.io-client';
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5001';
 
 const ChallengeRooms = () => {
-  const { user: _user } = useAuth(); // eslint-disable-line no-unused-vars
+  const { user: _user } = useAuth();
   const [mode, setMode] = useState('lobby'); // lobby, waiting, active, completed
   const [roomCode, setRoomCode] = useState('');
   const [joinInput, setJoinInput] = useState('');

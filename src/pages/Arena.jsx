@@ -106,7 +106,8 @@ const Arena = () => {
         setLoading(false);
       }
     };
-    init();\n  }, []);
+    init();
+  }, []);
 
   // 2. Live Complexity Analyzer (Debounced)
   useEffect(() => {

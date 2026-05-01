@@ -16,7 +16,7 @@ router.post('/chat', protect, async (req, res) => {
       details = 'AI Quota exceeded. Please try again later or check your API key billing.';
     } else if (error.message) {
       try { const parsed = JSON.parse(error.message); details = parsed.error?.message || error.message; }
-      catch (e) { details = error.message; }
+      catch { details = error.message; }
     }
     console.error('FULL GEMINI ERROR:', error);
     res.status(error.status === 429 ? 429 : 500).json({ error: 'Gemini chat failed.', details });

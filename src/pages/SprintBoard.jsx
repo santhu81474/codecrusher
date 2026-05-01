@@ -20,7 +20,7 @@ const PRIORITY_COLORS = {
 
 const SprintBoard = () => {
   const { id: projectId } = useParams();
-  const { user: _user } = useAuth(); // eslint-disable-line no-unused-vars
+  const { user: _user } = useAuth();
   const [project, setProject] = useState(null);
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);

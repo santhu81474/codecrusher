@@ -24,7 +24,7 @@ const CodeBlock = ({ language, code }) => (
 );
 
 const TerminalChat = () => {
-  const { user: _user } = useAuth(); // eslint-disable-line no-unused-vars
+  const { user: _user } = useAuth();
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);

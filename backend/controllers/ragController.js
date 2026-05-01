@@ -34,7 +34,7 @@ const assembleCodebaseContext = () => {
         const content = fs.readFileSync(absolutePath, 'utf-8');
         sections.push(`--- FILE: ${file.label} (${file.path}) ---\n${content}\n--- END FILE ---`);
       }
-    } catch (err) { /* skip */ }
+    } catch { /* skip */ }
   }
   return sections.join('\n\n');
 };
