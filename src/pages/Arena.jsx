@@ -91,17 +91,31 @@ const Arena = () => {
   };
 
   useEffect(() => {
-    loadGlobalChallenge();
-  }, []);
+    const init = async () => {
+      setLoading(true);
+      setIsAdaptive(false);
+      try {
+        const { data } = await fetchDailyChallenge();
+        setChallenge(data);
+        setCode(templates.javascript);
+        setLanguage('javascript');
+        setAiMode('mentor');
+      } catch (error) {
+        console.error('Failed to fetch daily challenge', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    init();\n  }, []);
 
   // 2. Live Complexity Analyzer (Debounced)
   useEffect(() => {
     if (!code || code.trim().length < 5) return;
     
-    setAnalyzingComplexity(true);
     if (typingTimer.current) clearTimeout(typingTimer.current);
 
     typingTimer.current = setTimeout(async () => {
+      setAnalyzingComplexity(true);
       try {
         const { data } = await analyzeLiveComplexity(code);
         setComplexity(data);

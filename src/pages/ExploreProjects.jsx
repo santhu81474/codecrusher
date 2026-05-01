@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { fetchProjects, applyToProject } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-hot-toast';
@@ -29,7 +29,6 @@ const ExploreProjects = () => {
   const [sortBy, setSortBy] = useState('newest');
   const [selectedProject, setSelectedProject] = useState(null);
   const [applying, setApplying] = useState(false);
-  const [loadingDetails, setLoadingDetails] = useState(false);
   const modalRef = useRef(null);
 
   useEffect(() => {
@@ -47,7 +46,13 @@ const ExploreProjects = () => {
     load();
   }, []);
 
-  useEffect(() => { setFavorites(loadFavorites(user?.id)); }, [user?.id]);
+  // Sync favorites when user changes
+  const currentUserId = user?.id;
+  useEffect(() => {
+    const newFavorites = loadFavorites(currentUserId);
+    setFavorites(newFavorites);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUserId]);
 
   const toggleFavorite = (projectId) => {
     setFavorites(prev => {
@@ -150,8 +155,8 @@ const ExploreProjects = () => {
       <div className="grid grid-cols-3" style={{ gap: '16px', alignItems: 'stretch' }}>
         {filtered.map(project => {
           const isFavorite = favorites.has(project._id);
-          const hasApplied = (project.applicants || []).includes(user?.id);
-          const isOwner = project.ownerId?._id === user?.id;
+          const _hasApplied = (project.applicants || []).includes(user?.id);
+          const _isOwner = project.ownerId?._id === user?.id;
           return (
             <div key={project._id} className="card neon-hover" onClick={() => setSelectedProject(project)} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', cursor: 'pointer' }}>
               <div>

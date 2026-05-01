@@ -53,7 +53,7 @@ const CodeCast = () => {
       setRoomId(data.roomId);
       setMode('broadcasting');
       toast.success('Broadcasting started! Share the room code.');
-    } catch (err) {
+    } catch {
       toast.error('Failed to start broadcast');
     }
   };

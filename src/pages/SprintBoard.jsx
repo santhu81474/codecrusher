@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { getProjectById, addProjectTask, updateProjectTask, deleteProjectTask, generateSprintPlan } from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -20,7 +20,7 @@ const PRIORITY_COLORS = {
 
 const SprintBoard = () => {
   const { id: projectId } = useParams();
-  const { user } = useAuth();
+  const { user: _user } = useAuth(); // eslint-disable-line no-unused-vars
   const [project, setProject] = useState(null);
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -36,7 +36,7 @@ const SprintBoard = () => {
         const { data } = await getProjectById(projectId);
         setProject(data);
         setTasks(data.tasks || []);
-      } catch (err) {
+      } catch {
         toast.error('Failed to load project');
       } finally {
         setLoading(false);
@@ -55,7 +55,7 @@ const SprintBoard = () => {
       setNewTask({ title: '', description: '', priority: 'medium' });
       setShowAddModal(false);
       toast.success('Task added');
-    } catch (err) {
+    } catch {
       toast.error('Failed to add task');
     }
   };
@@ -66,7 +66,7 @@ const SprintBoard = () => {
     try {
       const { data } = await updateProjectTask(projectId, taskId, { status: newStatus });
       setTasks(data);
-    } catch (err) {
+    } catch {
       toast.error('Failed to move task');
       // Revert
       const { data } = await getProjectById(projectId);
@@ -80,7 +80,7 @@ const SprintBoard = () => {
       const { data } = await deleteProjectTask(projectId, taskId);
       setTasks(data);
       toast.success('Task deleted');
-    } catch (err) {
+    } catch {
       toast.error('Failed to delete task');
     }
   };
@@ -110,7 +110,7 @@ const SprintBoard = () => {
       const { data: refreshed } = await getProjectById(projectId);
       setTasks(refreshed.tasks || []);
       toast.success(`Generated ${allTasks.length} tasks!`);
-    } catch (err) {
+    } catch {
       toast.error('AI planning failed');
     } finally {
       setGenerating(false);

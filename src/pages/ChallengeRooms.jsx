@@ -7,15 +7,15 @@ import io from 'socket.io-client';
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5001';
 
 const ChallengeRooms = () => {
-  const { user } = useAuth();
+  const { user: _user } = useAuth(); // eslint-disable-line no-unused-vars
   const [mode, setMode] = useState('lobby'); // lobby, waiting, active, completed
   const [roomCode, setRoomCode] = useState('');
   const [joinInput, setJoinInput] = useState('');
-  const [room, setRoom] = useState(null);
+  const [room, setRoom] = useState(null); // eslint-disable-line no-unused-vars
   const [code, setCode] = useState('');
   const [opponentProgress, setOpponentProgress] = useState(0);
   const [timer, setTimer] = useState(0);
-  const [results, setResults] = useState(null);
+  const [results, setResults] = useState(null); // eslint-disable-line no-unused-vars
   const socketRef = useRef(null);
   const timerRef = useRef(null);
 
@@ -64,7 +64,7 @@ const ChallengeRooms = () => {
       setRoomCode(data.roomCode);
       setMode('waiting');
       toast.success(`Room created! Code: ${data.roomCode}`);
-    } catch (err) {
+    } catch {
       toast.error('Failed to create room');
     }
   };

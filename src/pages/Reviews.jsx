@@ -20,7 +20,7 @@ const Reviews = () => {
         alert('Review submitted successfully!');
         navigate('/applications');
       }, 500);
-    } catch (err) {
+    } catch {
       setLoading(false);
       alert('Failed to submit review');
     }

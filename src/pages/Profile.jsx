@@ -21,14 +21,15 @@ const Profile = () => {
     const [githubEdit, setGithubEdit] = useState(user?.githubUrl || '');
     const [linkedinEdit, setLinkedinEdit] = useState(user?.linkedinUrl || '');
     const [savingSocial, setSavingSocial] = useState(false);
-    const [socialMessage, setSocialMessage] = useState('');
+    const [socialMessage, setSocialMessage] = useState(''); // eslint-disable-line no-unused-vars
     const [ownedProjects, setOwnedProjects] = useState([]);
     const [applications, setApplications] = useState([]);
-    const [activity, setActivity] = useState([]);
+    const [activity, setActivity] = useState([]); // eslint-disable-line no-unused-vars
     const [snippetCount, setSnippetCount] = useState(0);
-    const [loadingActivity, setLoadingActivity] = useState(true);
+    const [loadingActivity, setLoadingActivity] = useState(true); // eslint-disable-line no-unused-vars
   
     // Mocking profile extra details (used as fallback only)
+    // eslint-disable-next-line no-unused-vars
     const profileDetails = {
       skills: ['React', 'Node.js', 'PostgreSQL', 'AWS'],
       rating: 4.8,

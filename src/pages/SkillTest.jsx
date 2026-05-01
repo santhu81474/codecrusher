@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../services/api';
+
 
 const mockQuestions = [
   { id: 1, text: 'What does React use to increase performance?', options: ['Virtual DOM', 'Real DOM', 'Shadow DOM', 'None of the above'], answer: 'Virtual DOM' },
@@ -36,7 +36,7 @@ const SkillTest = () => {
         setScore(calculatedScore);
         setLoading(false);
       }, 500);
-    } catch (err) {
+    } catch {
       setLoading(false);
       alert('Failed to submit test');
     }

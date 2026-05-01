@@ -143,9 +143,13 @@ const AIExplainer = () => {
           <div style={{ flex: 1, overflowY: 'auto', padding: '20px' }}>
             {loading && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                {[1,2,3,4,5].map(i => (
-                  <div key={i} className="skeleton" style={{ height: `${16 + Math.random() * 20}px`, width: `${50 + Math.random() * 50}%`, borderRadius: '4px' }} />
-                ))}
+              {[1,2,3,4,5].map(i => {
+                  const heights = [28, 20, 34, 22, 30];
+                  const widths = [70, 85, 55, 90, 65];
+                  return (
+                    <div key={i} className="skeleton" style={{ height: `${heights[i - 1]}px`, width: `${widths[i - 1]}%`, borderRadius: '4px' }} />
+                  );
+                })}
               </div>
             )}
             {!loading && !explanation && (

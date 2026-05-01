@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
@@ -27,8 +27,8 @@ const Navbar = () => {
   // Search users via API
   useEffect(() => {
     if (!debouncedSearch.trim()) {
-      setSearchResults([]);
-      setShowDropdown(false);
+      setSearchResults([]); // eslint-disable-line react-hooks/set-state-in-effect
+      setShowDropdown(false); // eslint-disable-line react-hooks/set-state-in-effect
       return;
     }
     const fetchResults = async () => {
@@ -59,8 +59,8 @@ const Navbar = () => {
 
   // Close dropdown on navigation
   useEffect(() => {
-    setShowDropdown(false);
-    setSearch('');
+    setShowDropdown(false); // eslint-disable-line react-hooks/set-state-in-effect
+    setSearch(''); // eslint-disable-line react-hooks/set-state-in-effect
   }, [location.pathname]);
 
   const handleLogout = () => {

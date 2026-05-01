@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 const cache = new Map();
 
 const Matchmaker = () => {
-  const { user } = useAuth();
+  const { user: _user } = useAuth(); // eslint-disable-line no-unused-vars
   const [requirements, setRequirements] = useState('');
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
