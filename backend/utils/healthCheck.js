@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 /**
  * Health check utility for monitoring and deployment probes.
- * Returns system status, database connectivity, uptime, and memory usage.
+ * Returns system status, database connectivity, uptime, and memory usage metrics.
  */
 export const getHealthStatus = () => {
   const memUsage = process.memoryUsage();
