@@ -22,3 +22,4 @@ This file documents all environment variables required for the CodeCrusher platf
 - All existing environment variables remain unchanged.
 - No new environment variables were introduced in this update.
 - The `VITE_BACKEND_URL` variable was already referenced in `api.js` and is now also used in CodeCast and ChallengeRooms for Socket.io connections.
+- Note: Remember to restart the development server after making changes to any environment variables.
