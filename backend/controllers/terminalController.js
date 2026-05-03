@@ -14,8 +14,8 @@ export const getTerminalHistory = async (req, res, next) => {
 export const postTerminalMessage = async (req, res, next) => {
   try {
     const { content } = req.body;
-    if (!content || content.length > 250) {
-      return res.status(400).json({ message: 'Message content is invalid or exceeds 250 characters.' });
+    if (!content || content.length > 500) {
+      return res.status(400).json({ message: 'Message content is invalid or exceeds 500 characters.' });
     }
     const userMessage = new TerminalMessage({ userId: req.user.id, role: 'user', content });
     await userMessage.save();
