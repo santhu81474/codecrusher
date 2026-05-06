@@ -9,9 +9,9 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ totalProjects: 0, myApplications: 0, myOwned: 0 });
   const [activity] = useState([
-    { id: 1, text: 'Alex joined Project Quantum', time: '2m ago', type: 'join' },
-    { id: 2, text: 'Sarah submitted a review', time: '5m ago', type: 'review' },
-    { id: 3, text: 'New asset deployed successfully', time: '12m ago', type: 'deploy' },
+    { id: 1, text: 'New member joined Project Quantum', time: '2m ago', icon: '👤' },
+    { id: 2, text: 'Code review submitted', time: '5m ago', icon: '📝' },
+    { id: 3, text: 'Asset deployed successfully', time: '12m ago', icon: '🚀' },
   ]);
   const [selectedProject, setSelectedProject] = useState(null);
   const [invertedIndex, setInvertedIndex] = useState({});
@@ -93,14 +93,7 @@ const Dashboard = () => {
   }, [projects]);
 
   if (!user) {
-    return (
-      <div className="flex h-[80vh] items-center justify-center">
-        <div className="p-8 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md text-center">
-          <div className="text-white/60 mb-4">You are not logged in.</div>
-          <Link to="/login" className="px-6 py-2 bg-indigo-500 hover:bg-indigo-600 transition-colors rounded-lg text-white font-medium">Log In</Link>
-        </div>
-      </div>
-    );
+    return <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>You are not logged in. Please log in again.</div>;
   }
 
   const getFilteredProjects = () => {
@@ -125,318 +118,258 @@ const Dashboard = () => {
   const filteredProjects = getFilteredProjects();
 
   if (loading) return (
-    <div className="max-w-[1300px] mx-auto flex gap-8 px-5 min-h-[80vh] pt-8 animate-pulse">
-      <div className="flex-[7] min-w-0">
-        <div className="h-[120px] bg-white/5 rounded-2xl mb-8" />
-        <div className="flex gap-4 mb-8">
-          <div className="h-24 bg-white/5 rounded-2xl flex-1" />
-          <div className="h-24 bg-white/5 rounded-2xl flex-1" />
-          <div className="h-24 bg-white/5 rounded-2xl flex-1" />
+    <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', gap: '28px', padding: '0 20px', minHeight: '80vh' }}>
+      <div style={{ flex: 7, minWidth: 0 }}>
+        <div className="skeleton" style={{ height: 90, marginBottom: 24, borderRadius: 12 }} />
+        <div style={{ display: 'flex', gap: 16, marginBottom: 24 }}>
+          <div className="skeleton" style={{ height: 80, flex: 1, borderRadius: 10 }} />
+          <div className="skeleton" style={{ height: 80, flex: 1, borderRadius: 10 }} />
+          <div className="skeleton" style={{ height: 80, flex: 1, borderRadius: 10 }} />
         </div>
-        <div className="grid grid-cols-2 gap-5">
-          {[1,2,3,4].map(i => <div key={i} className="h-[280px] bg-white/5 rounded-2xl" />)}
+        <div className="skeleton" style={{ height: 36, width: 280, marginBottom: 20, borderRadius: 8 }} />
+        <div className="grid grid-cols-2" style={{ gap: 16 }}>
+          <div className="skeleton" style={{ height: 240, borderRadius: 12 }} />
+          <div className="skeleton" style={{ height: 240, borderRadius: 12 }} />
+          <div className="skeleton" style={{ height: 240, borderRadius: 12 }} />
+          <div className="skeleton" style={{ height: 240, borderRadius: 12 }} />
         </div>
       </div>
-      <div className="flex-[3] flex flex-col gap-6">
-        <div className="h-[400px] bg-white/5 rounded-2xl" />
-        <div className="h-[250px] bg-white/5 rounded-2xl" />
+      <div style={{ flex: 3, display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <div className="skeleton" style={{ height: 320, borderRadius: 12 }} />
+        <div className="skeleton" style={{ height: 220, borderRadius: 12 }} />
       </div>
     </div>
   );
 
   return (
-    <div className="relative min-h-screen pt-8 pb-16">
-      {/* Dynamic Background Elements */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-indigo-600/20 blur-[120px] pointer-events-none" />
-      <div className="absolute top-[40%] right-[-10%] w-[30%] h-[30%] rounded-full bg-purple-600/20 blur-[100px] pointer-events-none" />
-      
-      <div className="max-w-[1300px] mx-auto flex flex-col lg:flex-row gap-8 px-5 relative z-10">
-        {/* Left Column: Main Dashboard (70%) */}
-        <div className="flex-[7] min-w-0">
-          
-          {/* Welcome Banner */}
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-500/10 via-purple-500/5 to-transparent border border-white/10 p-8 mb-8 backdrop-blur-md transition-all hover:border-white/20">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-indigo-400/20 to-purple-400/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-            <div className="relative z-10">
-              <h1 className="text-3xl md:text-4xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-white via-indigo-100 to-indigo-300">
-                Welcome back, {user?.name?.split(' ')[0] || 'Explorer'}
-              </h1>
-              <p className="text-indigo-200/70 font-medium">
-                Here's what's happening in your workspace today.
+    <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', gap: '28px', padding: '0 20px' }}>
+      {/* Left Column: Main Dashboard (70%) */}
+      <div style={{ flex: 7, minWidth: 0 }}>
+        
+        {/* Welcome Banner */}
+        <div className="welcome-banner">
+          <div className="welcome-name">Welcome back, {user?.name?.split(' ')[0] || 'Operator'}</div>
+          <div className="welcome-subtitle">
+            Session active · {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' })}
+          </div>
+        </div>
+
+        {/* Stats Bar */}
+        <div style={{ display: 'flex', gap: '16px', marginBottom: 28 }}>
+          {[
+            { label: 'Total Projects', value: stats.totalProjects, color: 'var(--accent-blue)' },
+            { label: 'My Applications', value: stats.myApplications, color: 'var(--accent-green)' },
+            { label: 'Owned Assets', value: stats.myOwned, color: 'var(--accent-amber)' },
+          ].map(stat => (
+            <div key={stat.label} className="card" style={{ flex: 1, padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <div className="mono" style={{ fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 1 }}>{stat.label}</div>
+              <div style={{ fontSize: 28, fontWeight: 700, color: stat.color, fontFamily: 'var(--font-display)' }}>{stat.value}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Section Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          <h1 className="page-title" style={{ marginBottom: 0 }}>Project Network</h1>
+          {searchQuery && (
+            <span className="badge mono" style={{ color: 'var(--link-color)', borderColor: 'rgba(88, 166, 255, 0.3)', fontSize: '12px', padding: '4px 12px' }}>
+              Query: "{searchQuery}"
+            </span>
+          )}
+        </div>
+
+        {/* Project Grid */}
+        <div className="grid grid-cols-2" style={{ gap: '16px' }}>
+          {filteredProjects.length === 0 ? (
+            <div className="empty-state" style={{ gridColumn: 'span 2' }}>
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+              <h2 className="empty-state-title">No projects found</h2>
+              <p className="empty-state-desc">
+                We couldn't find any projects matching your search. Try adjusting your filters or create a new project.
               </p>
+              <Link to="/projects/create" className="btn btn-primary">Create Project</Link>
             </div>
-          </div>
-
-          {/* Premium Stats Row */}
-          <div className="flex gap-4 mb-10 overflow-x-auto pb-2 -mx-2 px-2 snap-x">
-            <div className="flex-1 min-w-[200px] snap-center rounded-2xl bg-white/[0.03] border border-white/5 p-6 backdrop-blur-xl relative overflow-hidden group hover:bg-white/[0.05] transition-all">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl group-hover:bg-blue-500/20 transition-all" />
-              <div className="text-blue-400 mb-2">
-                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
-              </div>
-              <div className="text-4xl font-bold text-white mb-1">{stats.totalProjects}</div>
-              <div className="text-sm text-white/50 font-medium uppercase tracking-wider">Total Projects</div>
-            </div>
-
-            <div className="flex-1 min-w-[200px] snap-center rounded-2xl bg-white/[0.03] border border-white/5 p-6 backdrop-blur-xl relative overflow-hidden group hover:bg-white/[0.05] transition-all">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition-all" />
-              <div className="text-emerald-400 mb-2">
-                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-              </div>
-              <div className="text-4xl font-bold text-white mb-1">{stats.myApplications}</div>
-              <div className="text-sm text-white/50 font-medium uppercase tracking-wider">Active Apps</div>
-            </div>
-
-            <div className="flex-1 min-w-[200px] snap-center rounded-2xl bg-white/[0.03] border border-white/5 p-6 backdrop-blur-xl relative overflow-hidden group hover:bg-white/[0.05] transition-all">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/10 rounded-full blur-2xl group-hover:bg-amber-500/20 transition-all" />
-              <div className="text-amber-400 mb-2">
-                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>
-              </div>
-              <div className="text-4xl font-bold text-white mb-1">{stats.myOwned}</div>
-              <div className="text-sm text-white/50 font-medium uppercase tracking-wider">Owned Assets</div>
-            </div>
-          </div>
-
-          {/* Section Header */}
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-white">Discover Projects</h2>
-            {searchQuery && (
-              <div className="px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-sm font-medium flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" />
-                Results for "{searchQuery}"
-              </div>
-            )}
-          </div>
-
-          {/* Project Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {filteredProjects.length === 0 ? (
-              <div className="col-span-2 flex flex-col items-center justify-center p-12 text-center rounded-3xl border border-dashed border-white/10 bg-white/[0.02]">
-                <div className="w-16 h-16 mb-4 rounded-full bg-white/5 flex items-center justify-center text-white/40">
-                  <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                </div>
-                <h3 className="text-lg font-medium text-white mb-2">No projects found</h3>
-                <p className="text-white/50 max-w-md mb-6">We couldn't find any projects matching your criteria. Try adjusting your search or start a new project.</p>
-                <Link to="/projects/create" className="px-6 py-2.5 bg-white text-black font-medium rounded-xl hover:bg-gray-200 transition-colors shadow-lg shadow-white/10">
-                  Create New Project
-                </Link>
-              </div>
-            ) : (
-              filteredProjects.map(project => {
-                const hasApplied = project.applicants?.includes(user?.id);
-                
-                return (
-                  <div key={project._id} 
-                    className="group flex flex-col p-6 rounded-3xl bg-white/[0.02] border border-white/[0.05] hover:border-white/[0.15] hover:bg-white/[0.04] transition-all duration-300 cursor-pointer backdrop-blur-md relative overflow-hidden"
-                    onClick={() => setSelectedProject(project)}>
-                    
-                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    
-                    <div className="flex-1">
-                      <div className="flex justify-between items-start mb-4">
-                        <h3 className="text-xl font-bold text-white group-hover:text-indigo-300 transition-colors line-clamp-1">{project.title}</h3>
-                        <span className="text-xs font-medium text-white/40 bg-white/5 px-2.5 py-1 rounded-full whitespace-nowrap">
-                          {new Date(project.timestamp).toLocaleDateString(undefined, {month: 'short', day: 'numeric'})}
-                        </span>
-                      </div>
-                      
-                      <div className="flex items-center gap-2 mb-4">
-                        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-indigo-400 to-purple-400 flex items-center justify-center text-[10px] font-bold text-white">
-                          {(project.ownerId?.name || 'A')[0].toUpperCase()}
-                        </div>
-                        <span className="text-sm text-white/60">
-                          by <span className="text-white/80 font-medium">{project.ownerId?.name || 'Anonymous User'}</span>
-                        </span>
-                      </div>
-                      
-                      <p className="text-white/60 text-sm mb-6 line-clamp-2 leading-relaxed">
-                        {project.description}
-                      </p>
-                      
-                      <div className="flex flex-wrap gap-2 mb-6">
-                        {project.requiredSkills.slice(0, 3).map(skill => (
-                          <span key={skill} className="px-3 py-1 rounded-full text-xs font-medium bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
-                            {skill}
-                          </span>
-                        ))}
-                        {project.requiredSkills.length > 3 && (
-                          <span className="px-3 py-1 rounded-full text-xs font-medium bg-white/5 text-white/50 border border-white/10">
-                            +{project.requiredSkills.length - 3}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="pt-5 border-t border-white/[0.05] flex justify-between items-center mt-auto">
-                      <div className="flex items-center gap-2">
-                        <div className="flex -space-x-2">
-                          {[...Array(Math.min(project.applicants?.length || 0, 3))].map((_, i) => (
-                            <div key={i} className="w-7 h-7 rounded-full bg-gray-700 border-2 border-[#12121a] flex items-center justify-center text-[10px]" />
-                          ))}
-                        </div>
-                        <span className="text-xs text-white/50 ml-2">{project.applicants?.length || 0} members</span>
-                      </div>
-                      
-                      <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
-                        <button 
-                          className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-                            hasApplied 
-                            ? 'bg-white/5 text-white/50 cursor-default' 
-                            : 'bg-white text-black hover:bg-gray-200 shadow-lg shadow-white/10 hover:shadow-white/20 hover:-translate-y-0.5'
-                          }`}
-                          onClick={(e) => { e.stopPropagation(); !hasApplied && handleApply(project._id); }} 
-                          disabled={hasApplied}
-                        >
-                          {hasApplied ? 'Applied' : 'Join'}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })
-            )}
-          </div>
-        </div>
-
-        {/* Right Column: Sidebar (30%) */}
-        <div className="flex-[3] flex flex-col gap-6">
-          
-          {/* Quick Actions */}
-          <div className="p-6 rounded-3xl bg-gradient-to-b from-indigo-600/10 to-transparent border border-indigo-500/20 backdrop-blur-md">
-            <h3 className="text-lg font-bold text-white mb-4">Quick Actions</h3>
-            <div className="flex flex-col gap-3">
-              <Link to="/create" className="group flex items-center justify-between p-4 rounded-2xl bg-indigo-500 text-white font-medium hover:bg-indigo-600 transition-all shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:-translate-y-0.5">
-                <span>Deploy Project</span>
-                <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-              </Link>
-              <Link to="/leaderboard" className="flex items-center justify-between p-4 rounded-2xl bg-white/5 text-white/80 font-medium hover:bg-white/10 hover:text-white transition-all border border-white/5">
-                <span>Leaderboard</span>
-              </Link>
-              <Link to="/arena" className="flex items-center justify-between p-4 rounded-2xl bg-white/5 text-white/80 font-medium hover:bg-white/10 hover:text-white transition-all border border-white/5">
-                <span>Algo Arena</span>
-              </Link>
-            </div>
-          </div>
-
-          {/* Activity Feed */}
-          <div className="p-6 rounded-3xl bg-white/[0.02] border border-white/[0.05] backdrop-blur-md">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
-              <h3 className="text-lg font-bold text-white">Live Activity</h3>
-            </div>
-            
-            <div className="flex flex-col gap-5">
-              {activity.map((a, index) => (
-                <div key={a.id} className="flex gap-4 relative">
-                  {index !== activity.length - 1 && (
-                    <div className="absolute left-[11px] top-6 bottom-[-20px] w-px bg-white/10" />
-                  )}
-                  <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 z-10 ${
-                    a.type === 'join' ? 'bg-blue-500/20 text-blue-400' :
-                    a.type === 'review' ? 'bg-amber-500/20 text-amber-400' :
-                    'bg-emerald-500/20 text-emerald-400'
-                  }`}>
-                    <div className="w-2 h-2 rounded-full bg-current" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-white/80 leading-snug mb-1">{a.text}</p>
-                    <span className="text-xs text-white/40">{a.time}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* System Status */}
-          <div className="p-5 rounded-2xl bg-black/40 border border-white/5 flex justify-between items-center mt-auto">
-            <div className="flex items-center gap-2">
-              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-              <span className="text-xs font-medium text-white/60">System Operational</span>
-            </div>
-            <span className="text-xs font-medium text-white/40">12ms Ping</span>
-          </div>
-        </div>
-
-        {/* Project Details Modal */}
-        {selectedProject && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6" onClick={() => setSelectedProject(null)}>
-            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
-            <div 
-              className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-[#0f0f13] border border-white/10 rounded-3xl shadow-2xl shadow-black/50" 
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Modal Header */}
-              <div className="sticky top-0 z-10 flex justify-between items-center p-6 bg-[#0f0f13]/90 backdrop-blur-md border-b border-white/5">
-                <div>
-                  <h2 className="text-2xl font-bold text-white mb-1">{selectedProject.title}</h2>
-                  <div className="text-sm text-white/50 flex items-center gap-2">
-                    <span>by <span className="text-white/80">{selectedProject.ownerId?.name || 'Anonymous User'}</span></span>
-                    <span>•</span>
-                    <span>{new Date(selectedProject.timestamp).toLocaleDateString()}</span>
-                  </div>
-                </div>
-                <button 
-                  onClick={() => setSelectedProject(null)} 
-                  className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/60 hover:text-white transition-colors"
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                </button>
-              </div>
+          ) : (
+            filteredProjects.map(project => {
+              const hasApplied = project.applicants?.includes(user?.id);
               
-              {/* Modal Body */}
-              <div className="p-6 sm:p-8">
-                <div className="mb-8">
-                  <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider mb-3">About Project</h4>
-                  <p className="text-white/80 text-base leading-relaxed whitespace-pre-wrap">{selectedProject.description}</p>
-                </div>
+              return (
+                <div key={project._id} className="card neon-hover" style={{ display: 'flex', flexDirection: 'column', cursor: 'pointer' }} onClick={() => setSelectedProject(project)}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+                      <h3 className="card-title" style={{ fontSize: '1rem', marginBottom: 0 }}>{project.title}</h3>
+                      <span className="mono" style={{ fontSize: '11px', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>{new Date(project.timestamp).toLocaleDateString()}</span>
+                    </div>
+                    
+                    <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginBottom: '10px' }}>
+                      by <span style={{ color: 'var(--link-color)', fontWeight: 500 }}>{project.ownerId?.name || 'Anonymous User'}</span>
+                    </p>
+                    
+                    <p style={{ fontSize: '13px', color: 'var(--text-main)', marginBottom: '14px', lineHeight: '1.6', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                      {project.description}
+                    </p>
+                    
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginBottom: '14px' }}>
+                      {project.requiredSkills.slice(0, 4).map(skill => (
+                        <span key={skill} className="badge mono" style={{ fontSize: '10px', margin: 0 }}>{skill}</span>
+                      ))}
+                      {project.requiredSkills.length > 4 && <span className="badge mono" style={{ fontSize: '10px', margin: 0 }}>+{project.requiredSkills.length - 4}</span>}
+                    </div>
+                  </div>
 
-                <div className="mb-8">
-                  <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider mb-3">Required Tech Stack</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedProject.requiredSkills?.map(skill => (
-                      <span key={skill} className="px-4 py-2 rounded-xl text-sm font-medium bg-white/5 text-white/80 border border-white/10">
-                        {skill}
-                      </span>
-                    ))}
+                  <div style={{ paddingTop: '12px', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                      {project.applicants?.length || 0} applicants
+                    </span>
+                    <div style={{ display: 'flex', gap: '8px' }} onClick={(e) => e.stopPropagation()}>
+                      <Link onClick={(e) => e.stopPropagation()} to={`/projects/${project._id}/chat`} className="btn btn-outline mono" style={{ fontSize: '11px', padding: '5px 10px' }}>Chat</Link>
+                      <button 
+                        className={`btn ${hasApplied ? 'btn-outline' : 'btn-primary'} mono`} 
+                        onClick={(e) => { e.stopPropagation(); !hasApplied && handleApply(project._id); }} 
+                        style={{ fontSize: '11px', padding: '5px 10px', opacity: hasApplied ? 0.6 : 1, cursor: hasApplied ? 'default' : 'pointer' }}
+                        disabled={hasApplied}
+                      >
+                        {hasApplied ? 'Applied' : 'Join'}
+                      </button>
+                    </div>
                   </div>
                 </div>
+              );
+            })
+          )}
+        </div>
+      </div>
 
-                <div className="grid grid-cols-2 gap-4 mb-10">
-                  <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
-                    <div className="text-xs font-bold text-white/40 uppercase tracking-wider mb-2">Team Members</div>
-                    <div className="text-3xl font-bold text-white">{selectedProject.applicants?.length || 0}</div>
-                  </div>
-                  <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
-                    <div className="text-xs font-bold text-white/40 uppercase tracking-wider mb-2">Project ID</div>
-                    <div className="text-sm font-mono text-white/60 truncate">{selectedProject._id}</div>
-                  </div>
-                </div>
+      {/* Right Column: Sidebar (30%) */}
+      <div style={{ flex: 3, display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        
+        {/* Quick Actions */}
+        <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+          <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>
+            <h3 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--header-text)', margin: 0 }}>Quick Actions</h3>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', background: 'var(--border)' }}>
+            <Link to="/projects/create" className="neon-hover" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 20px', background: 'var(--card-bg)', color: 'var(--text-primary)', fontSize: '13px', fontWeight: 500, textDecoration: 'none' }}>
+              <span>Deploy New Project</span>
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" style={{ color: 'var(--text-muted)' }}><path d="M6.22 3.22a.75.75 0 011.06 0l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06-1.06L9.94 8 6.22 4.28a.75.75 0 010-1.06z" /></svg>
+            </Link>
+            <Link to="/leaderboard" className="neon-hover" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 20px', background: 'var(--card-bg)', color: 'var(--text-primary)', fontSize: '13px', fontWeight: 500, textDecoration: 'none' }}>
+              <span>Leaderboard</span>
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" style={{ color: 'var(--text-muted)' }}><path d="M6.22 3.22a.75.75 0 011.06 0l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06-1.06L9.94 8 6.22 4.28a.75.75 0 010-1.06z" /></svg>
+            </Link>
+            <Link to="/arena" className="neon-hover" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 20px', background: 'var(--card-bg)', color: 'var(--text-primary)', fontSize: '13px', fontWeight: 500, textDecoration: 'none' }}>
+              <span>Algo Arena</span>
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" style={{ color: 'var(--text-muted)' }}><path d="M6.22 3.22a.75.75 0 011.06 0l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06-1.06L9.94 8 6.22 4.28a.75.75 0 010-1.06z" /></svg>
+            </Link>
+            <Link to="/forge" className="neon-hover" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 20px', background: 'var(--card-bg)', color: 'var(--text-primary)', fontSize: '13px', fontWeight: 500, textDecoration: 'none' }}>
+              <span>Snippet Forge</span>
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" style={{ color: 'var(--text-muted)' }}><path d="M6.22 3.22a.75.75 0 011.06 0l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06-1.06L9.94 8 6.22 4.28a.75.75 0 010-1.06z" /></svg>
+            </Link>
+          </div>
+        </div>
 
-                {/* Modal Actions */}
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <Link 
-                    to={`/projects/${selectedProject._id}/chat`} 
-                    className="flex-1 py-3.5 px-6 rounded-xl text-center font-medium bg-white/5 hover:bg-white/10 text-white transition-colors border border-white/10"
-                  >
-                    Open Terminal Chat
-                  </Link>
-                  <button 
-                    className={`flex-1 py-3.5 px-6 rounded-xl font-medium transition-all shadow-lg ${
-                      selectedProject.applicants?.includes(user?.id) 
-                      ? 'bg-white/10 text-white/50 cursor-default shadow-none' 
-                      : 'bg-indigo-500 hover:bg-indigo-600 text-white shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:-translate-y-0.5'
-                    }`}
-                    onClick={() => !selectedProject.applicants?.includes(user?.id) && handleApply(selectedProject._id)}
-                    disabled={selectedProject.applicants?.includes(user?.id)}
-                  >
-                    {selectedProject.applicants?.includes(user?.id) ? 'Application Sent' : 'Apply to Join'}
-                  </button>
+        {/* Activity Feed */}
+        <div className="card">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+            <span className="pulse" style={{ width: 8, height: 8, backgroundColor: 'var(--accent-green)', borderRadius: '50%', display: 'inline-block' }} />
+            <h3 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--header-text)', margin: 0 }}>Activity Feed</h3>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            {activity.map(a => (
+              <div key={a.id} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+                <span style={{ fontSize: '14px', lineHeight: '20px', flexShrink: 0 }}>{a.icon}</span>
+                <div>
+                  <div style={{ fontSize: '13px', color: 'var(--text-main)', lineHeight: '1.4', marginBottom: '2px' }}>{a.text}</div>
+                  <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{a.time}</div>
                 </div>
               </div>
+            ))}
+          </div>
+        </div>
+
+        {/* System Status */}
+        <div className="card" style={{ padding: '14px 20px' }}>
+          <div className="mono" style={{ color: 'var(--text-muted)', fontSize: '11px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: 'var(--accent-green)', display: 'inline-block' }} />
+              UPTIME: 99.9%
+            </span>
+            <span>LATENCY: 12ms</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Project Details Modal */}
+      {selectedProject && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Project details: ${selectedProject.title}`}
+          style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}
+          onClick={() => setSelectedProject(null)}
+        >
+          <div className="card" style={{ width: '100%', maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto', position: 'relative', animation: 'pageIn 0.2s ease-out' }} onClick={(e) => e.stopPropagation()}>
+            <button onClick={() => setSelectedProject(null)} aria-label="Close modal" style={{ position: 'absolute', top: '16px', right: '16px', background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '22px', lineHeight: 1, padding: '4px' }}>
+              ×
+            </button>
+            
+            <h2 style={{ color: 'var(--header-text)', marginTop: 0, marginBottom: '8px', fontSize: '22px', paddingRight: '40px' }}>{selectedProject.title}</h2>
+            
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
+              <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary-text)', fontSize: '12px', fontWeight: 600 }}>
+                {selectedProject.ownerId?.name?.charAt(0) || '?'}
+              </div>
+              <span style={{ color: 'var(--link-color)', fontSize: '14px', fontWeight: 500 }}>
+                {selectedProject.ownerId?.name || 'Anonymous User'}
+              </span>
+              <span style={{ color: 'var(--text-muted)', fontSize: '12px' }}>
+                · {new Date(selectedProject.timestamp).toLocaleDateString()}
+              </span>
+            </div>
+
+            <div style={{ marginBottom: '20px' }}>
+              <h3 style={{ fontSize: '12px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>Description</h3>
+              <p style={{ lineHeight: 1.7, color: 'var(--text-main)', fontSize: '14px', whiteSpace: 'pre-wrap' }}>{selectedProject.description}</p>
+            </div>
+
+            <div style={{ marginBottom: '20px' }}>
+              <h3 style={{ fontSize: '12px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>Required Skills</h3>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                {selectedProject.requiredSkills?.map(skill => (
+                  <span key={skill} className="badge" style={{ borderColor: 'var(--accent-green)', color: 'var(--accent-green)' }}>{skill}</span>
+                ))}
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '12px', marginBottom: '20px' }}>
+              <div style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.03)', padding: '12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
+                <div style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Applicants</div>
+                <div style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)' }}>{selectedProject.applicants?.length || 0}</div>
+              </div>
+              <div style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.03)', padding: '12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
+                <div style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Project ID</div>
+                <div className="mono" style={{ fontSize: '11px', color: 'var(--text-main)', overflow: 'hidden', textOverflow: 'ellipsis' }}>{selectedProject._id}</div>
+              </div>
+            </div>
+
+            <div style={{ borderTop: '1px solid var(--border)', paddingTop: '20px', display: 'flex', gap: '12px' }}>
+              <Link to={`/projects/${selectedProject._id}/chat`} className="btn btn-outline" style={{ flex: 1, justifyContent: 'center' }}>Terminal Chat</Link>
+              <button 
+                className={`btn ${selectedProject.applicants?.includes(user?.id) ? 'btn-outline' : 'btn-primary'}`}
+                onClick={() => !selectedProject.applicants?.includes(user?.id) && handleApply(selectedProject._id)}
+                disabled={selectedProject.applicants?.includes(user?.id)}
+                style={{ flex: 1 }}
+              >
+                {selectedProject.applicants?.includes(user?.id) ? 'Already Applied' : 'Apply to Join'}
+              </button>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };
